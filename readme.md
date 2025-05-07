@@ -14,10 +14,15 @@
 ## 0. Ficha del proyecto
 
 ### **0.1. Tu nombre completo:**
+Jorge Ronceros Caceres /
+Omari Sopromadze
 
 ### **0.2. Nombre del proyecto:**
+ZenTurno
 
 ### **0.3. Descripción breve del proyecto:**
+ZenTurno es una plataforma integral de gestión de citas que simplifica la reserva de turnos en peluquerías y consultorios. Permite a los clientes programar, modificar y cancelar citas online las 24 horas, mientras ofrece a los negocios un sistema completo para administrar profesionales, servicios y agenda. Con notificaciones automáticas, estadísticas de rendimiento e historial de clientes, ZenTurno optimiza la organización del tiempo, reduce cancelaciones y mejora la experiencia tanto para usuarios como para establecimientos.
+
 
 ### **0.4. URL del proyecto:**
 
@@ -31,16 +36,27 @@
 ---
 
 ## 1. Descripción general del producto
-
-> Describe en detalle los siguientes aspectos del producto:
+ZenTurno es un sistema donde los usuarios reservan turnos según disponibilidad, y el administrador gestiona el calendario.
 
 ### **1.1. Objetivo:**
 
-> Propósito del producto. Qué valor aporta, qué soluciona, y para quién.
+ZenTurno es una plataforma integral de gestión de reservas diseñada específicamente para negocios de servicios personales como peluquerías, barberías y estéticos. Su propósito principal es optimizar y automatizar el proceso de reserva de citas, eliminando las ineficiencias de los sistemas manuales tradicionales. ZenTurno aporta valor tanto a los propietarios de negocios como a sus clientes, reduciendo el tiempo dedicado a la gestión de agenda, minimizando los turnos perdidos, y ofreciendo una experiencia de reserva fluida y accesible las 24 horas.
 
 ### **1.2. Características y funcionalidades principales:**
+   - Reservas online: Sistema intuitivo que permite a los clientes reservar, modificar o cancelar citas desde cualquier dispositivo sin necesidad de llamadas telefónicas.
+   - Gestión de agenda avanzada: Calendario dinámico que sincroniza automáticamente las reservas de múltiples profesionales, evitando solapamientos y optimizando los tiempos entre servicios.
+   - Perfiles personalizados: Cada profesional cuenta con su perfil donde se muestran sus especialidades, horarios y valoraciones de clientes.
+   - Recordatorios automáticos: Notificaciones por email y SMS a clientes y profesionales para reducir la tasa de ausencias.
+   - Panel de administración: Control total del negocio con estadísticas de ocupación, servicios más solicitados y rendimiento por profesional.
+   - Sistema de fidelización: Programa de puntos, descuentos por frecuencia y promociones personalizadas para clientes recurrentes.
+   - Integración de pagos: Reserva con señas o pago completo anticipado mediante diversos métodos (tarjeta, transferencia, billeteras digitales).
+   - Historial de clientes: Registro detallado de visitas, servicios realizados, preferencias y observaciones para personalizar la atención.
+   - Recursos y stock: Control de inventario de productos utilizados y disponibilidad de espacios físicos.
+   - Interfaz responsive: Diseño adaptable a cualquier dispositivo (móvil, tablet, ordenador) para facilitar su uso tanto a clientes como empleados.
+   - Modo offline: Funcionalidad básica disponible aun sin conexión a internet para registrar citas en el local.
+   - Multiidioma: Disponible en español, inglés y otros idiomas según la región de implementación.
 
-> Enumera y describe las características y funcionalidades específicas que tiene el producto para satisfacer las necesidades identificadas.
+ZenTurno transforma la experiencia de reserva de turnos, ofreciendo una solución completa que reduce la carga administrativa, mejora la satisfacción del cliente y permite a los negocios enfocarse en lo que mejor saben hacer: proporcionar servicios de calidad.   
 
 ### **1.3. Diseño y experiencia de usuario:**
 

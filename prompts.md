@@ -17,6 +17,7 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 ## 1. Descripción general del producto
 
 **Prompt 1:**
+Quisiera crear un "Sistema de reservas de turnos para peluquería o consultorio" y necesito que me brindes una descripción general del producto y también me describas las características y funcionalidades principales
 
 **Prompt 2:**
 
