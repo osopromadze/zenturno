@@ -60,7 +60,182 @@ ZenTurno transforma la experiencia de reserva de turnos, ofreciendo una solució
 
 ### **1.3. Diseño y experiencia de usuario:**
 
-> Proporciona imágenes y/o videotutorial mostrando la experiencia del usuario desde que aterriza en la aplicación, pasando por todas las funcionalidades principales.
+#### Principios de Diseño
+
+##### 1. Simplicidad y Claridad
+- Interfaz minimalista con navegación intuitiva
+- Flujo de reserva simplificado en pocos pasos
+- Jerarquía visual clara que prioriza las acciones principales
+
+##### 2. Consistencia
+- Lenguaje visual uniforme en todas las plataformas
+- Patrones de interacción reconocibles
+- Terminología coherente en toda la aplicación
+
+##### 3. Accesibilidad
+- Diseño inclusivo siguiendo estándares WCAG 2.1 AA
+- Contraste adecuado para usuarios con discapacidad visual
+- Compatibilidad con lectores de pantalla
+
+##### 4. Flexibilidad
+- Experiencia adaptada para distintos tipos de negocios
+- Personalización por establecimiento (colores, logos)
+- Opciones de configuración según necesidades específicas
+
+#### Experiencia de Usuario
+
+##### 1. Cliente Final
+###### Flujo de Reserva:
+1. Registro/Inicio de sesión (opcional para primera reserva)
+2. Selección del establecimiento (si hay múltiples locales)
+3. Elección del servicio deseado
+4. Selección del profesional preferido o disponible
+5. Visualización del calendario con disponibilidad en tiempo real
+6. Selección de fecha y hora
+7. Confirmación y opción de pago anticipado
+8. Recepción de confirmación y recordatorios
+
+###### Funcionalidades clave:
+- Historial de citas previas
+- Sistema de favoritos (profesionales y servicios)
+- Valoraciones post-servicio
+- Notificaciones personalizables
+- Reprogramación o cancelación con políticas claras
+
+##### 2. Administrador/Propietario
+###### Panel de control principal:
+- Vista consolidada de métricas clave y agenda diaria
+- Alertas sobre situaciones que requieren atención
+- Acceso rápido a funciones frecuentes
+
+###### Áreas principales:
+- Gestión de agenda y reservas
+- Administración de profesionales y horarios
+- Configuración de servicios y precios
+- Estadísticas e informes de rendimiento
+- Gestión de clientes y comunicaciones
+- Configuración del establecimiento
+
+##### 3. Profesional/Empleado
+###### Interfaz simplificada:
+- Vista de agenda diaria/semanal personal
+- Detalles de próximos clientes
+- Historial de servicios realizados
+- Gestión limitada de disponibilidad personal
+
+#### Elementos de Diseño Visual
+
+##### 1. Paleta de Colores
+- **Primario**: Azul turquesa (`#30B4C5`) - Transmite calma, confianza y profesionalismo
+- **Secundario**: Verde menta (`#88D498`) - Representa frescura y bienestar
+- **Acento**: Amarillo ámbar (`#F0A202`) - Destaca acciones importantes
+- **Neutros**: 
+  - Gris claro (`#F5F5F5`)
+  - Gris medio (`#E0E0E0`)
+  - Gris oscuro (`#424242`)
+
+##### 2. Tipografía
+- **Títulos**: Montserrat (Sans-serif) - Moderna y de alta legibilidad
+- **Cuerpo**: Open Sans - Excelente legibilidad en todos los tamaños
+- **Escalas**:
+  - H1: 24px/30px
+  - H2: 20px/26px
+  - Cuerpo: 16px/24px
+  - Pequeño: 14px/20px
+
+##### 3. Componentes UI
+- **Botones**: Esquinas redondeadas con estados claros (hover, active, disabled)
+- **Tarjetas**: Sombras suaves para elevación y jerarquía
+- **Iconografía**: Sistema de iconos coherente y minimalista
+- **Espaciado**: Sistema de grid de 8px para consistencia
+
+#### Prototipos y Wireframes
+
+![Wireframes de ZenTurno](images/wireframes.jpg)
+
+Los wireframes muestran las interfaces clave de ZenTurno: la vista móvil para clientes, el panel de administración para propietarios del negocio, y la vista simplificada para profesionales. El diseño responsivo garantiza una experiencia coherente en todos los dispositivos mientras mantiene la simplicidad y efectividad de cada interfaz según su contexto de uso.
+
+#### Navegación y Flujos de Usuario
+
+##### 1. Cliente Final
+###### Flujo principal de navegación:
+```
+Inicio → Registro/Login → Explorar Servicios → Seleccionar Servicio → 
+Elegir Profesional → Seleccionar Fecha/Hora → Confirmar Reserva → Recibir Confirmación
+```
+
+###### Flujos secundarios:
+- **Gestión de perfil**: Mi Cuenta → Información Personal / Preferencias / Historial
+- **Reprogramación**: Mis Reservas → Seleccionar Reserva → Reprogramar → Elegir Nueva Fecha/Hora
+- **Cancelación**: Mis Reservas → Seleccionar Reserva → Cancelar → Confirmar Cancelación
+
+##### 2. Administrador
+###### Navegación principal:
+Dashboard → Reservas / Profesionales / Servicios / Clientes / Estadísticas / Configuración
+
+###### Gestión de reservas:
+Reservas → Vista Calendario / Lista de Reservas → Detalles de Reserva → Confirmar / Reprogramar / Cancelar / Completar
+
+###### Gestión de recursos:
+Profesionales → Listado → Ver/Editar Profesional → Horarios / Servicios / Estadísticas
+
+#### Estrategia de Interacción
+
+##### 1. Feedback Visual
+- Confirmaciones visuales inmediatas tras acciones importantes
+- Indicadores de progreso durante procesos multi-paso
+- Estados visibles para elementos interactivos (hover, active, visited)
+
+##### 2. Notificaciones
+- Sistema de notificaciones en-app con categorías (urgente, informativo)
+- Notificaciones por correo electrónico y SMS personalizables
+- Recordatorios graduales (24h, 2h antes de cita)
+
+##### 3. Prevención de Errores
+- Validación en tiempo real de formularios
+- Mensajes claros de error con sugerencias de corrección
+- Confirmación para acciones destructivas o de alto impacto
+
+##### 4. Personalización
+- Adaptación de contenido según historial del usuario
+- Sugerencias basadas en preferencias previas
+- Configuración de vista (modo claro/oscuro, densidad de información)
+
+#### Pruebas de Usabilidad
+
+##### 1. Métodos de Evaluación
+- Test A/B de flujos críticos
+- Entrevistas con usuarios reales de diferentes perfiles
+- Pruebas de tiempo para tareas comunes
+- Mapas de calor para identificar puntos de fricción
+
+##### 2. Métricas de Seguimiento
+- Tasa de abandono en flujo de reserva
+- Tiempo de completado para tareas frecuentes
+- Satisfacción del usuario (NPS, CSAT)
+- Frecuencia de uso de funciones clave
+
+#### Consideraciones Adicionales
+
+##### 1. Modo Offline
+- Sincronización automática al recuperar conexión
+- Caché inteligente de datos frecuentes
+- Indicadores de estado de conexión
+
+##### 2. Rendimiento
+- Tiempo de carga inicial optimizado (<3 segundos)
+- Carga progresiva de contenido
+- Optimización para conexiones lentas
+
+##### 3. Micro-interacciones
+- Animaciones sutiles para transiciones
+- Feedback táctil en dispositivos móviles
+- Sonidos discretos opcionales para confirmaciones
+
+##### 4. Internacionalización
+- Diseño adaptable a diferentes longitudes de texto
+- Soporte para RTL (árabe, hebreo)
+- Adaptación cultural de iconografía y colores
 
 ### **1.4. Instrucciones de instalación:**
 > Documenta de manera precisa las instrucciones para instalar y poner en marcha el proyecto en local (librerías, backend, frontend, servidor, base de datos, migraciones y semillas de datos, etc.)

@@ -20,6 +20,7 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 Quisiera crear un "Sistema de reservas de turnos para peluquería o consultorio" y necesito que me brindes una descripción general del producto y también me describas las características y funcionalidades principales
 
 **Prompt 2:**
+en base a la información que tienes del proyecto ZenTurno puedes sugerirme información de "Diseño y experiencia de usuario" para el proyecto
 
 **Prompt 3:**
 
