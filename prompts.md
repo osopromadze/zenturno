@@ -23,8 +23,8 @@ Quisiera crear un "Sistema de reservas de turnos para peluquería o consultorio"
 en base a la información que tienes del proyecto ZenTurno puedes sugerirme información de "Diseño y experiencia de usuario" para el proyecto
 
 **Prompt 3:**
-
----
+puedes generar la guía de "Instrucciones de instalación"
+Hay que documentar de manera precisa las instrucciones para instalar y poner en marcha el proyecto en local (librerías, backend, frontend, servidor, base de datos, migraciones y semillas de datos, etc.)
 
 ## 2. Arquitectura del Sistema
 

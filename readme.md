@@ -238,9 +238,240 @@ Profesionales → Listado → Ver/Editar Profesional → Horarios / Servicios / 
 - Adaptación cultural de iconografía y colores
 
 ### **1.4. Instrucciones de instalación:**
-> Documenta de manera precisa las instrucciones para instalar y poner en marcha el proyecto en local (librerías, backend, frontend, servidor, base de datos, migraciones y semillas de datos, etc.)
+Esta guía proporciona instrucciones detalladas para instalar y configurar el sistema de gestión de citas ZenTurno en un entorno local de desarrollo.
+Requisitos Previos
+Asegúrate de tener instalado en tu sistema:
 
----
+  - Node.js (v16.x o superior)
+  - npm (v8.x o superior) o yarn (v1.22.x o superior)
+  - PostgreSQL (v14.x o superior)
+  - Git (v2.x o superior)
+  - Redis (v6.x o superior) - para sistema de colas y caché
+
+Herramientas recomendadas:
+
+  - Visual Studio Code o cualquier IDE de preferencia
+  - Postman o Insomnia para pruebas de API
+  - pgAdmin o DBeaver para gestión de base de datos
+
+Estructura del Proyecto
+ZenTurno está organizado como un monorepo con la siguiente estructura:
+
+zenturno/
+├── backend/           # API REST en Node.js/Express
+├── frontend/          # Aplicación React para clientes y administración
+├── mobile/            # Aplicación React Native para profesionales
+├── common/            # Código compartido entre proyectos
+└── docs/              # Documentación
+
+### Configuración de la Base de Datos
+
+#### 1. Crear base de datos en PostgreSQL
+Puedes usar el cliente pgAdmin o ejecutar en terminal:
+```sql
+psql -U postgres
+CREATE DATABASE zenturno_dev;
+CREATE USER zenturno_user WITH ENCRYPTED PASSWORD 'zenturno_password';
+GRANT ALL PRIVILEGES ON DATABASE zenturno_dev TO zenturno_user;
+\q
+```
+
+#### 2. Configurar conexión a la base de datos
+Copia el archivo de ejemplo de variables de entorno:
+```bash
+cd backend
+cp .env.example .env
+```
+
+Edita el archivo `.env` con los datos de conexión a tu base de datos local:
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=zenturno_dev
+DB_USER=zenturno_user
+DB_PASSWORD=zenturno_password
+```
+
+#### 3. Ejecutar migraciones
+```bash
+cd backend
+npx sequelize-cli db:migrate
+```
+
+#### 4. Cargar datos iniciales (seeds)
+```bash
+npx sequelize-cli db:seed:all
+```
+
+### Instalación del Frontend
+
+#### 1. Instalar dependencias del frontend
+```bash
+cd ../frontend
+npm install
+```
+
+#### 2. Configurar variables de entorno del frontend
+```bash
+cp .env.example .env.local
+```
+
+Edita el archivo `.env.local` con la URL del backend:
+```env
+REACT_APP_API_URL=http://localhost:3001/api
+REACT_APP_SOCKET_URL=http://localhost:3001
+```
+
+### Variables de Entorno
+
+#### Backend (.env)
+```env
+# Servidor
+PORT=3001
+NODE_ENV=development
+
+# JWT Auth
+JWT_SECRET=your_very_secure_jwt_secret_key
+JWT_EXPIRATION=24h
+
+# Email (para notificaciones)
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=your_email@example.com
+SMTP_PASS=your_email_password
+EMAIL_FROM=noreply@zenturno.com
+
+# SMS (opcional)
+TWILIO_ACCOUNT_SID=your_twilio_account_sid
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
+TWILIO_PHONE_NUMBER=+12345678901
+
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=
+
+# Cloudinary (almacenamiento de imágenes)
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
+
+#### Frontend (.env.local)
+```env
+# API
+REACT_APP_API_URL=http://localhost:3001/api
+REACT_APP_SOCKET_URL=http://localhost:3001
+
+# Analíticas (opcional)
+REACT_APP_GA_TRACKING_ID=UA-XXXXXXXXX-X
+
+# Mapas (opcional)
+REACT_APP_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+
+# Pagos (opcional)
+REACT_APP_STRIPE_PUBLIC_KEY=your_stripe_public_key
+```
+
+### Ejecución del Proyecto
+
+#### 1. Iniciar el servidor backend
+```bash
+cd backend
+npm run dev
+```
+El servidor estará disponible en `http://localhost:3001`
+
+#### 2. Iniciar el cliente frontend
+En una nueva terminal:
+```bash
+cd frontend
+npm start
+```
+La aplicación web estará disponible en `http://localhost:3000`
+
+#### 3. Iniciar Redis
+En una nueva terminal (si no está ejecutándose como servicio):
+```bash
+redis-server
+```
+
+### Datos de Prueba
+Después de cargar los seeds, podrás acceder con los siguientes usuarios de prueba:
+
+#### Administrador
+- **Email**: `admin@zenturno.com`
+- **Contraseña**: `Admin123!`
+
+#### Profesional
+- **Email**: `profesional@zenturno.com`
+- **Contraseña**: `Prof123!`
+
+#### Cliente
+- **Email**: `cliente@zenturno.com`
+- **Contraseña**: `Cliente123!`
+
+### Solución de Problemas Comunes
+
+#### Error de conexión a la base de datos
+- Verifica que PostgreSQL esté en ejecución
+- Comprueba las credenciales en tu archivo `.env`
+- Asegúrate de haber creado la base de datos
+
+```bash
+# Verificar estado de PostgreSQL en Linux/Mac
+sudo service postgresql status
+
+# Verificar estado de PostgreSQL en Windows
+net start | findstr /i "postgresql"
+```
+
+#### Error de CORS en el frontend
+Si encuentras errores de CORS al conectar el frontend con el backend:
+1. Verifica que las URL configuradas sean correctas
+2. Comprueba que el middleware CORS esté correctamente configurado en el backend
+
+#### Error en migraciones
+Si hay problemas con las migraciones:
+```bash
+# Deshacer todas las migraciones
+npx sequelize-cli db:migrate:undo:all
+
+# Volver a ejecutar migraciones
+npx sequelize-cli db:migrate
+
+# Regenerar datos
+npx sequelize-cli db:seed:all
+```
+
+### Configuraciones Adicionales
+
+#### Configuración de Email Transaccional
+Para configurar el envío de emails, debes agregar las credenciales SMTP en las variables de entorno del backend.
+Para desarrollo, puedes usar servicios como Mailtrap que proporcionan un entorno de prueba para emails.
+
+#### Configuración de Pagos (Stripe)
+1. Crea una cuenta en Stripe
+2. Obtén tus claves API de prueba
+3. Configura las variables de entorno correspondientes
+
+#### Configuración de SMS (Twilio)
+1. Crea una cuenta en Twilio
+2. Obtén tus credenciales
+3. Configura las variables de entorno correspondientes
+
+#### Almacenamiento de Imágenes (Cloudinary)
+1. Crea una cuenta en Cloudinary
+2. Obtén tus credenciales
+3. Configura las variables de entorno correspondientes
+
+#### Configuración de WebSockets
+El sistema utiliza Socket.io para notificaciones en tiempo real. Asegúrate de que los puertos necesarios estén abiertos y que la URL del socket esté correctamente configurada en el frontend.
+
+### Modo de Desarrollo vs Producción
+Ten en cuenta que esta guía está orientada al entorno de desarrollo. Para despliegue en producción se requieren configuraciones adicionales de seguridad, optimización y escalabilidad.
+
+Para dudas o problemas durante la instalación, consulta la documentación detallada en la carpeta `docs/` o contacta al equipo de desarrollo en `soporte@zenturno.com`.
 
 ## 2. Arquitectura del Sistema
 
