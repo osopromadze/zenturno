@@ -72,6 +72,7 @@ No generes un resumen ni una introducción general: **concéntrate en desarrolla
 ### **2.4. Infraestructura y despliegue**
 
 **Prompt 1:**
+Desarrolla el apartado 2.4 del @readme.md , describiendo con precisión técnica los componentes principales, su función e interacciones.
 
 **Prompt 2:**
 

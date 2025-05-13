@@ -829,7 +829,198 @@ zenturno/
 
 ### **2.4. Infraestructura y despliegue**
 
-> Detalla la infraestructura del proyecto, incluyendo un diagrama en el formato que creas conveniente, y explica el proceso de despliegue que se sigue
+La infraestructura de ZenTurno está diseñada para alta disponibilidad y escalabilidad, utilizando servicios cloud y contenedores Docker.
+
+#### Diagrama de Infraestructura
+
+```mermaid
+graph TB
+    subgraph "Production Environment"
+        LB[Load Balancer]
+        
+        subgraph "Application Cluster"
+            API1[API Node 1]
+            API2[API Node 2]
+            WS1[WebSocket 1]
+            WS2[WebSocket 2]
+        end
+        
+        subgraph "Database Cluster"
+            MASTER[(PostgreSQL Master)]
+            SLAVE[(PostgreSQL Slave)]
+        end
+        
+        subgraph "Cache Layer"
+            REDIS1[(Redis Primary)]
+            REDIS2[(Redis Replica)]
+        end
+        
+        subgraph "Worker Nodes"
+            W1[Worker 1]
+            W2[Worker 2]
+        end
+        
+        subgraph "Storage"
+            S3[Object Storage]
+            CDN[CDN]
+        end
+        
+        subgraph "Monitoring"
+            PROM[Prometheus]
+            GRAF[Grafana]
+            LOG[ELK Stack]
+        end
+    end
+    
+    LB --> API1
+    LB --> API2
+    LB --> WS1
+    LB --> WS2
+    
+    API1 --> MASTER
+    API2 --> MASTER
+    MASTER --> SLAVE
+    
+    API1 --> REDIS1
+    API2 --> REDIS1
+    REDIS1 --> REDIS2
+    
+    API1 --> S3
+    API2 --> S3
+    S3 --> CDN
+    
+    W1 --> MASTER
+    W2 --> MASTER
+    W1 --> REDIS1
+    W2 --> REDIS1
+```
+
+#### Componentes de Infraestructura
+
+1. **Load Balancer**
+   - NGINX con configuración de alta disponibilidad
+   - SSL/TLS termination
+   - Rate limiting y DDoS protection
+   - Health checks activos
+
+2. **Application Cluster**
+   - Contenedores Docker orquestados con Kubernetes
+   - Auto-scaling basado en CPU/Memory
+   - Rolling updates sin downtime
+   - Health checks y self-healing
+
+3. **Database Cluster**
+   - PostgreSQL en configuración Master-Slave
+   - Automated failover
+   - Point-in-time recovery
+   - Backups automatizados
+
+4. **Cache Layer**
+   - Redis en modo cluster
+   - Persistencia AOF
+   - Automatic failover
+   - Cache invalidation strategy
+
+5. **Worker Nodes**
+   - Procesamiento asíncrono distribuido
+   - Auto-scaling basado en queue size
+   - Retry policies configurables
+   - Dead letter queues
+
+6. **Storage**
+   - S3-compatible object storage
+   - CDN para assets estáticos
+   - Backup retention policies
+   - Lifecycle management
+
+7. **Monitoring Stack**
+   - Prometheus para métricas
+   - Grafana para visualización
+   - ELK Stack para logs
+   - Alerting configurado
+
+#### Proceso de Despliegue
+
+1. **Continuous Integration**
+   ```bash
+   # 1. Testing
+   npm run test
+   npm run lint
+   
+   # 2. Building
+   docker build -t zenturno-api .
+   docker build -t zenturno-worker .
+   
+   # 3. Security Scan
+   trivy image zenturno-api
+   
+   # 4. Push to Registry
+   docker push zenturno-api
+   ```
+
+2. **Continuous Deployment**
+   ```bash
+   # 1. Database Migrations
+   npm run migrate:check
+   npm run migrate:up
+   
+   # 2. Deploy to Kubernetes
+   kubectl apply -f k8s/
+   
+   # 3. Verify Deployment
+   kubectl rollout status deployment/api
+   
+   # 4. Run Smoke Tests
+   npm run test:e2e
+   ```
+
+3. **Post-Deployment**
+   ```bash
+   # 1. Verify Services
+   kubectl get pods
+   kubectl logs -l app=api
+   
+   # 2. Monitor Metrics
+   curl http://prometheus/metrics
+   
+   # 3. Cleanup
+   kubectl delete -f k8s/cleanup/
+   ```
+
+#### Estrategia de Backup y Recuperación
+
+1. **Database Backups**
+   - Full backup diario
+   - WAL archiving continuo
+   - Retención: 30 días
+   - Test de recuperación semanal
+
+2. **Application State**
+   - Config maps versionados
+   - Secrets en HashiCorp Vault
+   - Estado distribuido en Redis
+   - Session persistence
+
+3. **Disaster Recovery**
+   - RTO: 1 hora
+   - RPO: 5 minutos
+   - Failover automatizado
+   - Documentación actualizada
+
+#### Monitorización y Alerting
+
+1. **Métricas Clave**
+   - Response time (p95, p99)
+   - Error rate
+   - CPU/Memory usage
+   - Queue length
+   - Cache hit ratio
+
+2. **Alerting**
+   - PagerDuty integration
+   - Escalation policies
+   - Runbooks documentados
+   - Incident management
 
 ### **2.5. Seguridad**
 
