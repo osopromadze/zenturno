@@ -593,7 +593,107 @@ La arquitectura de ZenTurno sigue un patrón de Monolito Modular con componentes
 
 ### **2.2. Descripción de componentes principales:**
 
-> Describe los componentes más importantes, incluyendo la tecnología utilizada
+#### 1. Frontend Layer
+- **Web Application (React)**
+  - Framework: React 18 con TypeScript
+  - State Management: Redux Toolkit + RTK Query
+  - UI Framework: Material-UI v5
+  - PWA con soporte offline
+  - Client-side caching con React Query
+
+- **Mobile Application (React Native)**
+  - Framework: React Native con TypeScript
+  - State Management: Redux Toolkit
+  - UI: React Native Paper
+  - Offline-first approach
+  - Push notifications
+
+#### 2. API Gateway Layer
+- **NGINX**
+  - Load balancing con algoritmo least_conn
+  - SSL/TLS termination
+  - Rate limiting y throttling
+  - Compression y caching
+  - Health checks
+
+- **Auth Service**
+  - JWT-based authentication
+  - OAuth2 para social login
+  - Role-based access control (RBAC)
+  - Session management con Redis
+  - Rate limiting por usuario
+
+#### 3. Core Services Layer
+- **API Service (Node.js)**
+  - Framework: Express.js
+  - TypeScript para type safety
+  - Domain-Driven Design (DDD)
+  - Repository pattern
+  - Error handling centralizado
+  - API versioning
+  - Swagger/OpenAPI documentation
+
+- **Socket Service**
+  - Socket.io para WebSockets
+  - Rooms para agrupación de conexiones
+  - Heartbeat para conexiones activas
+  - Reconexión automática
+  - Eventos en tiempo real
+
+- **Background Worker**
+  - Bull para gestión de colas
+  - Procesamiento asíncrono
+  - Retry policies configurables
+  - Dead letter queues
+  - Monitorización de jobs
+
+#### 4. Event System
+- **Redis (Message Broker)**
+  - Pub/Sub para eventos en tiempo real
+  - Stream processing
+  - Gestión de colas FIFO
+  - Cache distribuida
+  - Rate limiting distribuido
+
+#### 5. Data Layer
+- **PostgreSQL**
+  - Schemas por dominio
+  - Migrations con TypeORM
+  - Índices optimizados
+  - Particionamiento de tablas
+  - Connection pooling
+  - Query optimization
+
+- **Redis Cache**
+  - Cache de sesiones
+  - Cache de queries frecuentes
+  - Distributed locking
+  - Rate limiting
+  - Leaderboards y contadores
+
+#### 6. External Services
+- **Stripe (Payments)**
+  - Procesamiento de pagos
+  - Webhooks para eventos
+  - Manejo de disputas
+  - Reportes financieros
+
+- **Twilio (SMS)**
+  - Notificaciones SMS
+  - Verificación 2FA
+  - Templates personalizados
+
+- **Email Service**
+  - Templates HTML responsivos
+  - Queue de envíos
+  - Tracking de apertura/click
+  - Bounces handling
+
+- **Cloudinary (CDN)**
+  - Almacenamiento de imágenes
+  - Transformaciones on-the-fly
+  - Optimización automática
+  - Cache distribuido
 
 ### **2.3. Descripción de alto nivel del proyecto y estructura de ficheros**
 

@@ -40,6 +40,7 @@ Actua como si fueras arquitecto de software. Necesito que hagamos plan del proye
 ### **2.2. Descripción de componentes principales:**
 
 **Prompt 1:**
+Ahora quiero que analices bien y trabajes sobre el punto 2.2: Descripción de los componentes principales.
 
 **Prompt 2:**
 
