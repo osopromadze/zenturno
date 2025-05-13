@@ -697,7 +697,135 @@ La arquitectura de ZenTurno sigue un patrón de Monolito Modular con componentes
 
 ### **2.3. Descripción de alto nivel del proyecto y estructura de ficheros**
 
-> Representa la estructura del proyecto y explica brevemente el propósito de las carpetas principales, así como si obedece a algún patrón o arquitectura específica.
+El proyecto sigue una arquitectura modular basada en Clean Architecture y Domain-Driven Design, con la siguiente estructura de directorios:
+
+```
+zenturno/
+├── frontend/                 # Aplicación web React
+│   ├── src/
+│   │   ├── assets/          # Recursos estáticos
+│   │   ├── components/      # Componentes reutilizables
+│   │   ├── features/        # Módulos funcionales
+│   │   ├── hooks/           # Custom hooks
+│   │   ├── layouts/         # Plantillas de página
+│   │   ├── services/        # Servicios API
+│   │   └── utils/           # Utilidades comunes
+│   └── public/              # Archivos públicos
+│
+├── mobile/                  # Aplicación React Native
+│   ├── src/
+│   │   ├── components/      # Componentes nativos
+│   │   ├── navigation/      # Configuración de rutas
+│   │   ├── screens/         # Pantallas principales
+│   │   └── services/        # Servicios móviles
+│   └── assets/              # Recursos móviles
+│
+├── backend/                 # Servidor Node.js
+│   ├── src/
+│   │   ├── config/         # Configuraciones
+│   │   ├── domain/         # Lógica de negocio
+│   │   │   ├── entities/   # Entidades core
+│   │   │   ├── usecases/   # Casos de uso
+│   │   │   └── repos/      # Interfaces repositorio
+│   │   ├── infra/         # Implementaciones
+│   │   │   ├── db/        # Acceso a datos
+│   │   │   ├── external/  # Servicios externos
+│   │   │   └── http/      # Controladores HTTP
+│   │   └── utils/         # Utilidades
+│   └── tests/             # Tests unitarios/integración
+│
+├── workers/                # Trabajadores en segundo plano
+│   ├── email-worker/      # Procesamiento de emails
+│   ├── notification/      # Notificaciones push/SMS
+│   └── payment-hooks/     # Webhooks de pagos
+│
+├── nginx/                 # Configuración de NGINX
+│   ├── conf.d/           # Configuraciones por ambiente
+│   └── ssl/              # Certificados SSL
+│
+├── scripts/              # Scripts de automatización
+│   ├── deploy/          # Scripts de despliegue
+│   ├── db/             # Migraciones y seeds
+│   └── ci/             # Scripts de CI/CD
+│
+└── docs/               # Documentación
+    ├── api/           # Documentación API
+    ├── architecture/  # Docs de arquitectura
+    └── guides/        # Guías de desarrollo
+```
+
+#### Descripción de Componentes Principales
+
+1. **Frontend (`/frontend`)**
+   - **Propósito**: Interfaz web responsive para usuarios y administradores
+   - **Patrón**: Atomic Design + Feature-First
+   - **Integración**: Consume API REST y WebSockets
+   - **Características**: 
+     * Lazy loading de módulos
+     * State management centralizado
+     * Caché local y offline
+
+2. **Mobile (`/mobile`)**
+   - **Propósito**: App nativa para iOS/Android
+   - **Patrón**: Navigation-based architecture
+   - **Integración**: API REST + Push Notifications
+   - **Características**:
+     * Almacenamiento local
+     * Sincronización offline
+     * Geolocalización
+
+3. **Backend (`/backend`)**
+   - **Propósito**: API REST y lógica de negocio
+   - **Patrón**: Clean Architecture + DDD
+   - **Integración**: Base de datos + servicios externos
+   - **Características**:
+     * Modular y extensible
+     * Independiente de frameworks
+     * Testing por capas
+
+4. **Workers (`/workers`)**
+   - **Propósito**: Procesamiento asíncrono
+   - **Patrón**: Job Queue Pattern
+   - **Integración**: Redis + servicios externos
+   - **Características**:
+     * Procesamiento distribuido
+     * Retry policies
+     * Monitorización
+
+5. **NGINX (`/nginx`)**
+   - **Propósito**: Reverse proxy y load balancer
+   - **Patrón**: Gateway Pattern
+   - **Integración**: SSL + servicios backend
+   - **Características**:
+     * Configuración por ambiente
+     * Security headers
+     * Caching strategies
+
+6. **Scripts (`/scripts`)**
+   - **Propósito**: Automatización de tareas
+   - **Patrón**: Command Pattern
+   - **Integración**: CI/CD + infraestructura
+   - **Características**:
+     * Idempotencia
+     * Logging detallado
+     * Rollback support
+
+#### Patrones de Diseño Implementados
+
+1. **Clean Architecture**
+   - Separación clara de responsabilidades
+   - Independencia de frameworks
+   - Testabilidad mejorada
+
+2. **Domain-Driven Design**
+   - Bounded Contexts definidos
+   - Agregados y entidades
+   - Value Objects
+
+3. **Event-Driven**
+   - Comunicación asíncrona
+   - Desacoplamiento de servicios
+   - Escalabilidad horizontal
 
 ### **2.4. Infraestructura y despliegue**
 

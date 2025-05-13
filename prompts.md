@@ -49,6 +49,21 @@ Ahora quiero que analices bien y trabajes sobre el punto 2.2: Descripción de lo
 ### **2.3. Descripción de alto nivel del proyecto y estructura de ficheros**
 
 **Prompt 1:**
+Quiero que actúes como un analista experto en gestión de proyectos. Tu tarea es desarrollar el contenido del apartado **2.3: Descripción de alto nivel del proyecto y estructura de ficheros** dentro de @readme.md 
+
+Para ello:
+
+1. **Identifica y describe los componentes clave** que forman parte del proyecto.
+2. Para cada componente, indica:
+
+   * Su **nombre o denominación funcional**.
+   * Una **descripción clara y técnica** de su propósito.
+   * Su **función principal** dentro del sistema.
+   * Cómo **interactúa o se integra** con otros componentes.
+3. Utiliza un enfoque estructurado, profesional y orientado a entregables.
+4. Si es útil, organiza la información en formato de lista o tabla para facilitar la comprensión.
+
+No generes un resumen ni una introducción general: **concéntrate en desarrollar directamente el contenido del punto 2.3** con alto nivel de detalle y precisión técnica.
 
 **Prompt 2:**
 
