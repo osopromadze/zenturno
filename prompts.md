@@ -31,6 +31,7 @@ Hay que documentar de manera precisa las instrucciones para instalar y poner en 
 ### **2.1. Diagrama de arquitectura:**
 
 **Prompt 1:**
+Actua como si fueras arquitecto de software. Necesito que hagamos plan del proyecto basado en los apartados de @readme.md y vamos actualizando fichero. Ahora vamos a generar siguiente punto que es 2.1 Diagrama de arquitectura
 
 **Prompt 2:**
 

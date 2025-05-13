@@ -476,8 +476,120 @@ Para dudas o problemas durante la instalación, consulta la documentación detal
 ## 2. Arquitectura del Sistema
 
 ### **2.1. Diagrama de arquitectura:**
-> Usa el formato que consideres más adecuado para representar los componentes principales de la aplicación y las tecnologías utilizadas. Explica si sigue algún patrón predefinido, justifica por qué se ha elegido esta arquitectura, y destaca los beneficios principales que aportan al proyecto y justifican su uso, así como sacrificios o déficits que implica.
 
+```mermaid
+graph TB
+    %% Cliente
+    subgraph Cliente[Cliente Layer]
+        Web[Web App - React]
+        Mobile[Mobile App - React Native]
+    end
+
+    %% API Gateway
+    subgraph Gateway[API Gateway Layer]
+        NGINX[NGINX - Load Balancer]
+        Auth[Auth Service]
+    end
+
+    %% Core Services
+    subgraph Core[Core Services Layer]
+        API[API Service - Node.js]
+        Socket[Socket Service - Socket.io]
+        Worker[Background Worker]
+    end
+
+    %% Message Broker
+    subgraph Events[Event System]
+        Redis[Redis - Cache & Events]
+    end
+
+    %% Data Layer
+    subgraph Data[Data Layer]
+        DB[(PostgreSQL)]
+        Cache[(Redis Cache)]
+    end
+
+    %% External Services
+    subgraph External[External Services]
+        Stripe[Stripe - Payments]
+        Twilio[Twilio - SMS]
+        Mail[Email Service]
+        CDN[Cloudinary - CDN]
+    end
+
+    %% Conexiones
+    Web --> NGINX
+    Mobile --> NGINX
+    NGINX --> Auth
+    NGINX --> API
+    NGINX --> Socket
+    API --> Redis
+    Socket --> Redis
+    API --> DB
+    API --> Cache
+    Worker --> Redis
+    Worker --> External
+    API --> External
+
+```
+
+La arquitectura de ZenTurno sigue un patrón de Monolito Modular con componentes event-driven, diseñado para optimizar la escalabilidad y mantenibilidad. 
+
+#### Patrones Arquitectónicos Implementados:
+
+1. **Monolito Modular**
+   - Facilita el desarrollo y despliegue inicial
+   - Permite futura migración a microservicios si es necesario
+   - Mantiene la base de código manejable y cohesiva
+
+2. **Event-Driven Architecture**
+   - Gestión de eventos en tiempo real mediante Redis
+   - Desacoplamiento de servicios críticos
+   - Mejor manejo de picos de carga
+
+3. **Circuit Breaker Pattern**
+   - Implementado para servicios externos (Stripe, Twilio, etc.)
+   - Previene fallos en cascada
+   - Mejora la resiliencia del sistema
+
+#### Beneficios Principales:
+
+1. **Escalabilidad**
+   - Componentes independientemente escalables
+   - Cache distribuida con Redis
+   - Load balancing con NGINX
+
+2. **Mantenibilidad**
+   - Separación clara de responsabilidades
+   - Modularización por dominio de negocio
+   - Fácil integración de nuevos servicios
+
+3. **Rendimiento**
+   - Caché en múltiples niveles
+   - Procesamiento asíncrono de tareas pesadas
+   - Optimización de queries con Redis
+
+4. **Disponibilidad**
+   - Soporte offline
+   - Redundancia en servicios críticos
+   - Manejo graceful de fallos
+
+#### Sacrificios y Consideraciones:
+
+1. **Complejidad**
+   - Mayor complejidad inicial en configuración
+   - Necesidad de gestionar estado distribuido
+   - Curva de aprendizaje para nuevos desarrolladores
+
+2. **Costos**
+   - Múltiples servicios externos
+   - Necesidad de monitorización robusta
+   - Recursos para caché y mensajería
+
+3. **Latencia**
+   - Overhead por comunicación entre servicios
+   - Dependencia de servicios externos
+   - Necesidad de optimizar network calls
 
 ### **2.2. Descripción de componentes principales:**
 
@@ -553,4 +665,3 @@ Para dudas o problemas durante la instalación, consulta la documentación detal
 **Pull Request 2**
 
 **Pull Request 3**
-
