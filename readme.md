@@ -1343,13 +1343,14 @@ Estos endpoints cubren las funcionalidades clave de ZenTurno: creación de citas
 
 ## 5. Historias de Usuario
 
-> Documenta 3 de las historias de usuario principales utilizadas durante el desarrollo, teniendo en cuenta las buenas prácticas de producto al respecto.
+### **Historia de Usuario 1**
+**Como** cliente, **quiero** reservar una cita online seleccionando el servicio y profesional de mi preferencia, **para** ahorrar tiempo y evitar llamadas telefónicas.
 
-**Historia de Usuario 1**
+### **Historia de Usuario 2**
+**Como** cliente, **quiero** cancelar o reprogramar una cita previamente agendada, **para** ajustar mi agenda sin inconvenientes.
 
-**Historia de Usuario 2**
-
-**Historia de Usuario 3**
+### **Historia de Usuario 3**
+**Como** administrador, **quiero** gestionar los servicios y horarios de los profesionales desde un panel centralizado, **para** optimizar la organización del negocio y evitar conflictos de agenda.
 
 ---
 

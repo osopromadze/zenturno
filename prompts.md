@@ -118,6 +118,7 @@ La redacción debe ser técnica, coherente, y adecuada para ser incluida en @/re
 ### 4. Especificación de la API
 
 **Prompt 1:**
+
 Actúa como arquitecto de software. Completa la sección de documentación técnica en @/readme.md : `4. Especificación de la API`
 
 A partir de la descripción de ZenTurno —una plataforma de gestión de citas para peluquerías y consultorios— documenta los **3 endpoints principales** del backend RESTful en **formato OpenAPI (YAML o JSON)**. Incluye:
@@ -146,6 +147,26 @@ Redacta el contenido de forma técnica, clara y lista para ser incluida en la do
 ### 5. Historias de Usuario
 
 **Prompt 1:**
+
+Actúa como Product Manager con experiencia en metodologías ágiles. Completa la siguiente sección de documentación en @/readme.md  para el proyecto **ZenTurno**, una plataforma para la gestión de citas en peluquerías y consultorios: `5. Historias de Usuario`
+
+ Documenta **3 historias de usuario principales** que hayan guiado el desarrollo del sistema. Sigue el formato estándar:
+
+ **Como \[tipo de usuario], quiero \[acción o necesidad], para \[beneficio o resultado].**
+
+ Ten en cuenta las buenas prácticas de redacción de historias de usuario: deben ser claras, centradas en el usuario final, y enfocadas en el valor entregado. Las historias deben reflejar funcionalidades clave de ZenTurno como:
+
+ * Reservar una cita online
+ * Cancelar o reprogramar una cita
+ * Gestionar servicios y profesionales desde el panel de administración
+
+Completa la sección así:
+
+ **Historia de Usuario 1**
+
+ **Historia de Usuario 2**
+
+ **Historia de Usuario 3**
 
 **Prompt 2:**
 
