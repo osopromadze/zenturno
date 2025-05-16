@@ -1110,12 +1110,107 @@ Estas pruebas se ejecutan de manera continua como parte del pipeline de integrac
 
 ### **3.1. Diagrama del modelo de datos:**
 
-> Recomendamos usar mermaid para el modelo de datos, y utilizar todos los parámetros que permite la sintaxis para dar el máximo detalle, por ejemplo las claves primarias y foráneas.
+El modelo de datos de ZenTurno está diseñado para gestionar eficientemente las reservas, usuarios y servicios. A continuación, se presenta el diagrama en formato Mermaid:
 
+```mermaid
+erDiagram
+    Usuario {
+        int id PK
+        string nombre
+        string email UNIQUE
+        string contraseña
+        string rol
+    }
+    Profesional {
+        int id PK
+        string nombre
+        string especialidad
+        int usuario_id FK
+    }
+    Cliente {
+        int id PK
+        string nombre
+        string telefono
+        int usuario_id FK
+    }
+    Servicio {
+        int id PK
+        string nombre
+        float precio
+        int duracion_minutos
+    }
+    Reserva {
+        int id PK
+        datetime fecha_hora
+        int cliente_id FK
+        int profesional_id FK
+        int servicio_id FK
+        string estado
+    }
+
+    Usuario ||--o{ Profesional : "relaciona con"
+    Usuario ||--o{ Cliente : "relaciona con"
+    Profesional ||--o{ Reserva : "atiende"
+    Cliente ||--o{ Reserva : "realiza"
+    Servicio ||--o{ Reserva : "incluye"
+```
+
+---
 
 ### **3.2. Descripción de entidades principales:**
 
-> Recuerda incluir el máximo detalle de cada entidad, como el nombre y tipo de cada atributo, descripción breve si procede, claves primarias y foráneas, relaciones y tipo de relación, restricciones (unique, not null…), etc.
+#### 1. Usuario
+- **Propósito:** Representa a los usuarios del sistema, incluyendo administradores, profesionales y clientes.
+- **Atributos clave:**
+  - `id`: Identificador único del usuario.
+  - `nombre`: Nombre completo del usuario.
+  - `email`: Dirección de correo electrónico única.
+  - `contraseña`: Contraseña cifrada para autenticación.
+  - `rol`: Rol del usuario (Administrador, Profesional, Cliente).
+- **Relaciones:**
+  - Relación uno a uno con las entidades `Profesional` y `Cliente`.
+
+#### 2. Profesional
+- **Propósito:** Representa a los profesionales que ofrecen servicios en el sistema.
+- **Atributos clave:**
+  - `id`: Identificador único del profesional.
+  - `nombre`: Nombre del profesional.
+  - `especialidad`: Área de especialización del profesional.
+  - `usuario_id`: Relación con la entidad `Usuario`.
+- **Relaciones:**
+  - Relación uno a muchos con la entidad `Reserva`.
+
+#### 3. Cliente
+- **Propósito:** Representa a los clientes que realizan reservas en el sistema.
+- **Atributos clave:**
+  - `id`: Identificador único del cliente.
+  - `nombre`: Nombre del cliente.
+  - `telefono`: Número de contacto del cliente.
+  - `usuario_id`: Relación con la entidad `Usuario`.
+- **Relaciones:**
+  - Relación uno a muchos con la entidad `Reserva`.
+
+#### 4. Servicio
+- **Propósito:** Representa los servicios ofrecidos por los profesionales.
+- **Atributos clave:**
+  - `id`: Identificador único del servicio.
+  - `nombre`: Nombre del servicio.
+  - `precio`: Costo del servicio.
+  - `duracion_minutos`: Duración estimada del servicio en minutos.
+- **Relaciones:**
+  - Relación uno a muchos con la entidad `Reserva`.
+
+#### 5. Reserva
+- **Propósito:** Representa las reservas realizadas por los clientes para un servicio específico.
+- **Atributos clave:**
+  - `id`: Identificador único de la reserva.
+  - `fecha_hora`: Fecha y hora de la reserva.
+  - `cliente_id`: Relación con la entidad `Cliente`.
+  - `profesional_id`: Relación con la entidad `Profesional`.
+  - `servicio_id`: Relación con la entidad `Servicio`.
+  - `estado`: Estado de la reserva (pendiente, confirmada, cancelada).
+- **Relaciones:**
+  - Relación muchos a uno con las entidades `Cliente`, `Profesional` y `Servicio`.
 
 ---
 

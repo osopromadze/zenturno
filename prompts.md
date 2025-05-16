@@ -101,6 +101,13 @@ Ahora necesito que completes punto 2.6. Tests en @/readme.md
 ### 3. Modelo de Datos
 
 **Prompt 1:**
+Actúa como arquitecto de software. Necesito que completes la documentación técnica de un sistema incluyendo los siguientes apartados de @/readme.md 
+
+3.1. Diagrama del modelo de datos: genera un diagrama en texto (puede ser en formato Mermaid o pseudocódigo UML) que describa las entidades principales, sus atributos más relevantes, claves primarias y foráneas, así como las relaciones entre ellas (uno a uno, uno a muchos, muchos a muchos).
+
+3.2. Descripción de entidades principales: para cada entidad en el modelo de datos, proporciona una descripción clara de su propósito, sus atributos clave y su relación con otras entidades dentro del sistema.
+
+La redacción debe ser técnica, coherente, y adecuada para ser incluida en @/readme.md
 
 **Prompt 2:**
 
