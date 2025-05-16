@@ -118,6 +118,24 @@ La redacción debe ser técnica, coherente, y adecuada para ser incluida en @/re
 ### 4. Especificación de la API
 
 **Prompt 1:**
+Actúa como arquitecto de software. Completa la sección de documentación técnica en @/readme.md : `4. Especificación de la API`
+
+A partir de la descripción de ZenTurno —una plataforma de gestión de citas para peluquerías y consultorios— documenta los **3 endpoints principales** del backend RESTful en **formato OpenAPI (YAML o JSON)**. Incluye:
+
+* Método HTTP (`GET`, `POST`, etc.)
+* Ruta del endpoint
+* Descripción breve orientada al uso en ZenTurno (ej: creación de cita, consulta de agenda, gestión de servicios)
+* Parámetros requeridos (query o body)
+* Códigos de respuesta relevantes (`200`, `400`, `404`, `500`, etc.)
+* Ejemplo de solicitud y de respuesta en formato JSON
+
+Los endpoints deben reflejar funcionalidades clave del sistema, como:
+
+1. Crear una nueva cita
+2. Consultar disponibilidad de un profesional
+3. Cancelar una cita existente
+
+Redacta el contenido de forma técnica, clara y lista para ser incluida en la documentación oficial de backend de ZenTurno.
 
 **Prompt 2:**
 

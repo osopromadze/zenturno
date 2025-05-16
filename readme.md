@@ -1216,8 +1216,129 @@ erDiagram
 
 ## 4. Especificación de la API
 
-> Si tu backend se comunica a través de API, describe los endpoints principales (máximo 3) en formato OpenAPI. Opcionalmente puedes añadir un ejemplo de petición y de respuesta para mayor claridad
+A continuación, se describen los tres endpoints principales del backend RESTful de ZenTurno en formato OpenAPI (YAML):
 
+```yaml
+openapi: 3.0.0
+info:
+  title: ZenTurno API
+  version: 1.0.0
+  description: API RESTful para la gestión de citas en ZenTurno.
+
+paths:
+  /reservas:
+    post:
+      summary: Crear una nueva cita
+      description: Permite a un cliente crear una nueva cita con un profesional para un servicio específico.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cliente_id:
+                  type: integer
+                  description: ID del cliente que realiza la reserva.
+                profesional_id:
+                  type: integer
+                  description: ID del profesional que atenderá la cita.
+                servicio_id:
+                  type: integer
+                  description: ID del servicio solicitado.
+                fecha_hora:
+                  type: string
+                  format: date-time
+                  description: Fecha y hora de la cita.
+              required:
+                - cliente_id
+                - profesional_id
+                - servicio_id
+                - fecha_hora
+      responses:
+        '201':
+          description: Reserva creada exitosamente.
+          content:
+            application/json:
+              example:
+                id: 123
+                cliente_id: 1
+                profesional_id: 2
+                servicio_id: 3
+                fecha_hora: "2025-05-17T10:00:00Z"
+                estado: "pendiente"
+        '400':
+          description: Solicitud inválida.
+        '500':
+          description: Error interno del servidor.
+
+  /profesionales/{profesional_id}/disponibilidad:
+    get:
+      summary: Consultar disponibilidad de un profesional
+      description: Devuelve los horarios disponibles de un profesional para un rango de fechas.
+      parameters:
+        - name: profesional_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del profesional.
+        - name: fecha_inicio
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Fecha de inicio del rango.
+        - name: fecha_fin
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Fecha de fin del rango.
+      responses:
+        '200':
+          description: Horarios disponibles del profesional.
+          content:
+            application/json:
+              example:
+                profesional_id: 2
+                disponibilidad:
+                  - fecha: "2025-05-17"
+                    horarios: ["10:00", "11:00", "14:00"]
+                  - fecha: "2025-05-18"
+                    horarios: ["09:00", "13:00", "15:00"]
+        '404':
+          description: Profesional no encontrado.
+        '500':
+          description: Error interno del servidor.
+
+  /reservas/{reserva_id}:
+    delete:
+      summary: Cancelar una cita existente
+      description: Permite a un cliente cancelar una cita previamente creada.
+      parameters:
+        - name: reserva_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID de la reserva a cancelar.
+      responses:
+        '200':
+          description: Reserva cancelada exitosamente.
+          content:
+            application/json:
+              example:
+                message: "Reserva cancelada exitosamente."
+        '404':
+          description: Reserva no encontrada.
+        '500':
+          description: Error interno del servidor.
+```
+
+Estos endpoints cubren las funcionalidades clave de ZenTurno: creación de citas, consulta de disponibilidad y cancelación de citas.
 ---
 
 ## 5. Historias de Usuario
