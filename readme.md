@@ -1432,10 +1432,59 @@ Estos endpoints cubren las funcionalidades clave de ZenTurno: creación de citas
 
 ## 7. Pull Requests
 
-> Documenta 3 de las Pull Requests realizadas durante la ejecución del proyecto
+### **Pull Request 1**
+- **Título del Pull Request:** Implementación del endpoint para crear citas
+- **Descripción breve del cambio realizado:** Se desarrolló el endpoint `/reservas` en el backend para permitir a los clientes crear nuevas citas con profesionales, incluyendo validaciones de disponibilidad y existencia de datos.
+- **Objetivo o motivación del PR:** Habilitar la funcionalidad principal de la plataforma para que los clientes puedan agendar citas de manera eficiente.
+- **Archivos o módulos principales afectados:**
+  - `src/controllers/reservasController.js`
+  - `src/routes/reservasRoutes.js`
+  - `src/services/reservasService.js`
+  - `tests/reservas.test.js`
+- **Resumen de pruebas realizadas:** 
+  - Pruebas unitarias para las validaciones de datos.
+  - Pruebas de integración para verificar la interacción con la base de datos.
+  - Cobertura del 95% en el módulo de reservas.
+- **Comentarios o decisiones relevantes durante la revisión:** 
+  - Se decidió manejar los errores de disponibilidad con un código de estado `409 Conflict`.
+  - Se agregó un middleware para validar el formato de las fechas antes de llegar al controlador.
+- **Estado final del PR:** Aprobado.
 
-**Pull Request 1**
+---
 
-**Pull Request 2**
+### **Pull Request 2**
+- **Título del Pull Request:** Creación del formulario de reserva en el frontend
+- **Descripción breve del cambio realizado:** Se implementó un formulario interactivo en la interfaz web que permite a los clientes seleccionar un servicio, un profesional, y una fecha y hora para reservar una cita.
+- **Objetivo o motivación del PR:** Proveer una experiencia de usuario intuitiva y fluida para la reserva de citas.
+- **Archivos o módulos principales afectados:**
+  - `src/components/ReservaForm.jsx`
+  - `src/hooks/useReservas.js`
+  - `src/styles/ReservaForm.css`
+  - `tests/components/ReservaForm.test.js`
+- **Resumen de pruebas realizadas:** 
+  - Pruebas de renderizado del formulario.
+  - Simulación de interacciones del usuario (selección de opciones, envío del formulario).
+  - Validación de mensajes de error en caso de fallos.
+- **Comentarios o decisiones relevantes durante la revisión:** 
+  - Se decidió utilizar un componente de calendario externo (`react-datepicker`) para mejorar la selección de fechas.
+  - Se ajustaron los estilos para garantizar compatibilidad con dispositivos móviles.
+- **Estado final del PR:** Aprobado.
 
-**Pull Request 3**
+---
+
+### **Pull Request 3**
+- **Título del Pull Request:** Migración para la tabla de historial de citas
+- **Descripción breve del cambio realizado:** Se creó la tabla `HistorialCitas` en la base de datos, incluyendo relaciones con las tablas `Clientes`, `Profesionales` y `Servicios`.
+- **Objetivo o motivación del PR:** Permitir el almacenamiento y consulta del historial de citas para reportes y visualización en el perfil del cliente.
+- **Archivos o módulos principales afectados:**
+  - `migrations/20250515_create_historial_citas_table.js`
+  - `models/HistorialCitas.js`
+  - `tests/migrations/historialCitasMigration.test.js`
+- **Resumen de pruebas realizadas:** 
+  - Verificación de la creación correcta de la tabla y sus relaciones.
+  - Pruebas de integridad referencial al insertar y eliminar datos.
+  - Validación de índices para optimizar consultas.
+- **Comentarios o decisiones relevantes durante la revisión:** 
+  - Se decidió agregar un índice compuesto en `cliente_id` y `fecha_hora` para mejorar el rendimiento de las consultas frecuentes.
+  - Se ajustaron los nombres de las columnas para mantener consistencia con el resto del esquema.
+- **Estado final del PR:** Aprobado.

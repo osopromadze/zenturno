@@ -182,6 +182,25 @@ Completa la sección así:
 
 **Prompt 1:**
 
-**Prompt 2:**
+Actúa como líder técnico y encargado de la revisión de código en un equipo de desarrollo ágil. Completa la sección de documentación en @/readme.md: `7. Pull Requests`
 
-**Prompt 3:**
+Documenta **3 Pull Requests (PRs)** representativos del desarrollo de ZenTurno. Para cada PR, incluye la siguiente información detallada para facilitar la revisión y trazabilidad:
+
+- **Título del Pull Request**  
+- **Descripción breve del cambio realizado**  
+- **Objetivo o motivación del PR**  
+- **Archivos o módulos principales afectados**  
+- **Resumen de pruebas realizadas**  
+- **Comentarios o decisiones relevantes durante la revisión**  
+- **Estado final del PR (aprobado, pendiente, rechazado, etc.)**
+
+Ejemplos de PRs a documentar pueden incluir la implementación de nuevas funcionalidades, corrección de bugs críticos o mejoras en la arquitectura.
+
+Completa la sección así:
+
+**Pull Request 1**
+
+**Pull Request 2**
+
+**Pull Request 3**
+
