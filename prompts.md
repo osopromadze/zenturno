@@ -31,20 +31,13 @@ Hay que documentar de manera precisa las instrucciones para instalar y poner en 
 ### **2.1. Diagrama de arquitectura:**
 
 **Prompt 1:**
+
 Actua como si fueras arquitecto de software. Necesito que hagamos plan del proyecto basado en los apartados de @readme.md y vamos actualizando fichero. Ahora vamos a generar siguiente punto que es 2.1 Diagrama de arquitectura
-
-**Prompt 2:**
-
-**Prompt 3:**
 
 ### **2.2. Descripción de componentes principales:**
 
 **Prompt 1:**
 Ahora quiero que analices bien y trabajes sobre el punto 2.2: Descripción de los componentes principales.
-
-**Prompt 2:**
-
-**Prompt 3:**
 
 ### **2.3. Descripción de alto nivel del proyecto y estructura de ficheros**
 
@@ -65,36 +58,20 @@ Para ello:
 
 No generes un resumen ni una introducción general: **concéntrate en desarrollar directamente el contenido del punto 2.3** con alto nivel de detalle y precisión técnica.
 
-**Prompt 2:**
-
-**Prompt 3:**
-
 ### **2.4. Infraestructura y despliegue**
 
 **Prompt 1:**
 Desarrolla el apartado 2.4 del @readme.md , describiendo con precisión técnica los componentes principales, su función e interacciones.
-
-**Prompt 2:**
-
-**Prompt 3:**
 
 ### **2.5. Seguridad**
 
 **Prompt 1:**
 Actúa como arquitecto de software. Necesito que completes la documentación, punto 2.5 Seguridad en @/readme.md.
 
-**Prompt 2:**
-
-**Prompt 3:**
-
 ### **2.6. Tests**
 
 **Prompt 1:**
 Ahora necesito que completes punto 2.6. Tests en @/readme.md 
-
-**Prompt 2:**
-
-**Prompt 3:**
 
 ---
 
@@ -108,10 +85,6 @@ Actúa como arquitecto de software. Necesito que completes la documentación té
 3.2. Descripción de entidades principales: para cada entidad en el modelo de datos, proporciona una descripción clara de su propósito, sus atributos clave y su relación con otras entidades dentro del sistema.
 
 La redacción debe ser técnica, coherente, y adecuada para ser incluida en @/readme.md
-
-**Prompt 2:**
-
-**Prompt 3:**
 
 ---
 
@@ -137,10 +110,6 @@ Los endpoints deben reflejar funcionalidades clave del sistema, como:
 3. Cancelar una cita existente
 
 Redacta el contenido de forma técnica, clara y lista para ser incluida en la documentación oficial de backend de ZenTurno.
-
-**Prompt 2:**
-
-**Prompt 3:**
 
 ---
 
@@ -168,19 +137,44 @@ Completa la sección así:
 
  **Historia de Usuario 3**
 
-**Prompt 2:**
-
-**Prompt 3:**
-
 ---
 
 ### 6. Tickets de Trabajo
 
 **Prompt 1:**
 
-**Prompt 2:**
 
-**Prompt 3:**
+Actúa como líder técnico en un equipo de desarrollo ágil. Completa la sección de documentación de @/readme.md: `6. Tickets de Trabajo`
+
+Documenta **3 tickets de trabajo principales** del desarrollo de la plataforma **ZenTurno**, cada uno enfocado en una capa distinta del sistema:
+
+- **Ticket 1:** Backend  
+- **Ticket 2:** Frontend  
+- **Ticket 3:** Base de Datos
+
+Para cada ticket, incluye toda la información necesaria para que un desarrollador pueda ejecutarlo de principio a fin. La redacción debe seguir buenas prácticas de gestión técnica de tareas.
+
+La estructura de cada ticket debe ser:
+
+- **Título del ticket**  
+- **Descripción del objetivo de la tarea**  
+- **Contexto del sistema o funcionalidad involucrada (si aplica)**  
+- **Requerimientos técnicos específicos (endpoints, componentes, migraciones, etc.)**  
+- **Criterios de aceptación**  
+- **Notas adicionales (dependencias, riesgos, o referencias)**
+
+Ejemplos de tickets que puedes desarrollar:
+- Backend: Implementar endpoint para crear cita  
+- Frontend: Formulario de reserva de turno para clientes  
+- Base de Datos: Crear tabla y relaciones para historial de citas
+
+Completa la sección así:
+
+**Ticket 1**
+
+**Ticket 2**
+
+**Ticket 3**
 
 ---
 

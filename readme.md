@@ -1356,13 +1356,77 @@ Estos endpoints cubren las funcionalidades clave de ZenTurno: creación de citas
 
 ## 6. Tickets de Trabajo
 
-> Documenta 3 de los tickets de trabajo principales del desarrollo, uno de backend, uno de frontend, y uno de bases de datos. Da todo el detalle requerido para desarrollar la tarea de inicio a fin teniendo en cuenta las buenas prácticas al respecto. 
+### **Ticket 1: Backend**
+- **Título del ticket:** Implementar endpoint para crear cita
+- **Descripción del objetivo de la tarea:** Desarrollar un endpoint en el backend que permita a los clientes crear una nueva cita con un profesional para un servicio específico.
+- **Contexto del sistema o funcionalidad involucrada:** Este endpoint será parte del módulo de gestión de reservas y se integrará con la base de datos para almacenar la información de la cita.
+- **Requerimientos técnicos específicos:**
+  - Método HTTP: `POST`
+  - Ruta: `/reservas`
+  - Validaciones:
+    - `cliente_id`, `profesional_id`, `servicio_id` y `fecha_hora` son obligatorios.
+    - Verificar que el profesional esté disponible en la fecha y hora solicitadas.
+    - Confirmar que el cliente y el servicio existen en la base de datos.
+  - Respuestas:
+    - `201 Created` con los detalles de la cita creada.
+    - `400 Bad Request` si faltan datos o no se cumplen las validaciones.
+    - `500 Internal Server Error` en caso de errores inesperados.
+- **Criterios de aceptación:**
+  - El endpoint debe crear una cita válida y almacenarla en la base de datos.
+  - Las validaciones deben manejarse correctamente con mensajes de error claros.
+  - Las pruebas unitarias deben cubrir al menos el 90% del código del endpoint.
+- **Notas adicionales:** Este ticket depende de que las tablas `Reservas`, `Clientes`, `Profesionales` y `Servicios` estén correctamente configuradas en la base de datos.
 
-**Ticket 1**
+---
 
-**Ticket 2**
+### **Ticket 2: Frontend**
+- **Título del ticket:** Crear formulario de reserva de turno para clientes
+- **Descripción del objetivo de la tarea:** Diseñar e implementar un formulario en la interfaz web que permita a los clientes seleccionar un servicio, un profesional, y una fecha y hora para reservar un turno.
+- **Contexto del sistema o funcionalidad involucrada:** Este formulario será parte del flujo de reserva en la aplicación web y se conectará al endpoint `/reservas` del backend.
+- **Requerimientos técnicos específicos:**
+  - Componentes:
+    - Dropdown para seleccionar el servicio.
+    - Dropdown para seleccionar el profesional.
+    - Selector de fecha y hora.
+    - Botón de confirmación.
+  - Validaciones:
+    - Todos los campos son obligatorios.
+    - Mostrar mensajes de error si el backend devuelve un error.
+  - Integración:
+    - Consumir el endpoint `/reservas` para enviar los datos de la reserva.
+    - Mostrar un mensaje de éxito al completar la reserva.
+- **Criterios de aceptación:**
+  - El formulario debe ser funcional y enviar los datos correctamente al backend.
+  - La interfaz debe ser responsiva y accesible.
+  - Las pruebas de integración deben cubrir los flujos principales del formulario.
+- **Notas adicionales:** Este ticket depende de que el endpoint `/reservas` esté implementado y funcional en el backend.
 
-**Ticket 3**
+---
+
+### **Ticket 3: Base de Datos**
+- **Título del ticket:** Crear tabla y relaciones para historial de citas
+- **Descripción del objetivo de la tarea:** Diseñar y crear una tabla en la base de datos que almacene el historial de citas de los clientes, incluyendo información sobre el estado de la cita (pendiente, confirmada, cancelada).
+- **Contexto del sistema o funcionalidad involucrada:** Esta tabla será utilizada para mostrar el historial de citas en el perfil del cliente y para generar reportes administrativos.
+- **Requerimientos técnicos específicos:**
+  - Nombre de la tabla: `HistorialCitas`
+  - Columnas:
+    - `id` (PK, autoincremental)
+    - `cliente_id` (FK a `Clientes`)
+    - `profesional_id` (FK a `Profesionales`)
+    - `servicio_id` (FK a `Servicios`)
+    - `fecha_hora` (datetime)
+    - `estado` (enum: pendiente, confirmada, cancelada)
+    - `creado_en` (timestamp)
+    - `actualizado_en` (timestamp)
+  - Relaciones:
+    - Llaves foráneas a las tablas `Clientes`, `Profesionales` y `Servicios`.
+  - Índices:
+    - Índice en `cliente_id` para optimizar consultas por cliente.
+- **Criterios de aceptación:**
+  - La tabla debe crearse correctamente con todas las relaciones e índices definidos.
+  - Las migraciones deben incluir pruebas para verificar la integridad de los datos.
+  - La tabla debe estar sincronizada con el ORM utilizado en el backend.
+- **Notas adicionales:** Este ticket debe completarse antes de implementar funcionalidades que dependan del historial de citas.
 
 ---
 
