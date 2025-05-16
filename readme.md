@@ -15,7 +15,7 @@
 
 ### **0.1. Tu nombre completo:**
 Jorge Ronceros Caceres /
-Omari Sopromadze
+Omari Sopromadze Zirakadze
 
 ### **0.2. Nombre del proyecto:**
 ZenTurno
@@ -1024,12 +1024,86 @@ graph TB
 
 ### **2.5. Seguridad**
 
-> Enumera y describe las prácticas de seguridad principales que se han implementado en el proyecto, añadiendo ejemplos si procede
+ZenTurno implementa un enfoque de seguridad multicapa para proteger los datos sensibles y garantizar la integridad del sistema. A continuación, se describen las principales prácticas de seguridad implementadas:
 
+#### 1. Autenticación y Autorización
+- **Autenticación basada en JWT (JSON Web Tokens):** Los usuarios se autentican mediante tokens seguros que incluyen información cifrada y tienen una expiración definida.
+- **Control de acceso basado en roles (RBAC):** Los permisos están segmentados en roles como Administrador, Profesional y Cliente, asegurando que cada usuario acceda únicamente a los recursos necesarios.
+
+#### 2. Protección de Datos
+- **Cifrado de datos en tránsito y en reposo:** Todo el tráfico entre clientes y servidores está protegido mediante TLS 1.3. Los datos sensibles almacenados, como contraseñas, están cifrados con algoritmos robustos como AES-256.
+- **Política de retención de datos:** Los datos personales se almacenan únicamente durante el tiempo necesario y se eliminan de forma segura según las normativas aplicables.
+
+#### 3. Seguridad en la Infraestructura
+- **Segmentación de red:** Uso de VPCs (Virtual Private Clouds) para aislar los entornos de desarrollo, pruebas y producción.
+- **Firewalls y reglas de seguridad:** Configuración estricta de grupos de seguridad para limitar el acceso a los servicios esenciales.
+
+#### 4. Prevención de Ataques Comunes
+- **Protección contra XSS y CSRF:** Implementación de políticas de seguridad de contenido (CSP) y uso de tokens CSRF para prevenir ataques de scripting y falsificación de solicitudes.
+- **Validación de entradas:** Todas las entradas de usuarios son validadas y sanitizadas para evitar inyecciones SQL y otros vectores de ataque.
+
+#### 5. Monitorización y Auditoría
+- **Registro centralizado de logs:** Todos los eventos relevantes del sistema se registran y analizan para detectar actividades sospechosas.
+- **Alertas en tiempo real:** Configuración de alertas para intentos de acceso no autorizados y patrones de tráfico anormales.
+
+#### 6. Cumplimiento y Normativas
+- **Cumplimiento con GDPR:** ZenTurno garantiza el derecho al olvido, la portabilidad de datos y el consentimiento explícito para el tratamiento de información personal.
+- **Integración segura con servicios externos:** Uso de proveedores confiables como Stripe para pagos y Twilio para notificaciones, cumpliendo con estándares como PCI DSS.
+
+Estas medidas aseguran que ZenTurno ofrezca un entorno seguro tanto para los usuarios finales como para los administradores del sistema.
 ### **2.6. Tests**
 
-> Describe brevemente algunos de los tests realizados
+ZenTurno ha implementado un enfoque integral de pruebas para garantizar la calidad y estabilidad del sistema. A continuación, se describen los principales tipos de pruebas realizadas:
 
+#### 1. Pruebas Unitarias
+- **Objetivo:** Validar la funcionalidad de componentes individuales en aislamiento.
+- **Cobertura:** 
+  - Lógica de negocio en el backend (casos de uso, validaciones).
+  - Componentes de React en el frontend.
+- **Herramientas:** Jest, React Testing Library.
+- **Ejemplo:** Validación de la lógica de cálculo de disponibilidad de citas.
+
+#### 2. Pruebas de Integración
+- **Objetivo:** Verificar la interacción entre múltiples módulos o servicios.
+- **Cobertura:** 
+  - Comunicación entre el backend y la base de datos PostgreSQL.
+  - Integración de servicios externos como Stripe y Twilio.
+- **Herramientas:** Supertest, Postman.
+- **Ejemplo:** Validación del flujo completo de reserva de citas, incluyendo notificaciones.
+
+#### 3. Pruebas End-to-End (E2E)
+- **Objetivo:** Garantizar que el sistema funcione como un todo desde la perspectiva del usuario.
+- **Cobertura:** 
+  - Flujos críticos como registro, inicio de sesión, reserva de citas y pagos.
+  - Experiencia del usuario en dispositivos móviles y web.
+- **Herramientas:** Cypress.
+- **Ejemplo:** Simulación de un cliente que reserva una cita y recibe confirmación por correo.
+
+#### 4. Pruebas de Rendimiento
+- **Objetivo:** Evaluar el comportamiento del sistema bajo diferentes niveles de carga.
+- **Cobertura:** 
+  - Respuesta del servidor bajo alta concurrencia.
+  - Tiempo de carga de la interfaz web.
+- **Herramientas:** Apache JMeter, Lighthouse.
+- **Ejemplo:** Simulación de 1000 usuarios concurrentes realizando reservas.
+
+#### 5. Pruebas de Seguridad
+- **Objetivo:** Identificar vulnerabilidades y garantizar la protección de datos.
+- **Cobertura:** 
+  - Pruebas de inyección SQL y XSS.
+  - Validación de políticas de acceso y permisos.
+- **Herramientas:** OWASP ZAP, Burp Suite.
+- **Ejemplo:** Intento de acceso no autorizado a recursos protegidos.
+
+#### 6. Pruebas de Usabilidad
+- **Objetivo:** Asegurar que la experiencia del usuario sea intuitiva y eficiente.
+- **Cobertura:** 
+  - Navegación en la interfaz.
+  - Accesibilidad para usuarios con discapacidades.
+- **Herramientas:** Pruebas manuales, herramientas de accesibilidad como Axe.
+- **Ejemplo:** Evaluación de la claridad del flujo de reserva de citas.
+
+Estas pruebas se ejecutan de manera continua como parte del pipeline de integración y despliegue continuo (CI/CD), asegurando que cada cambio en el sistema sea validado antes de ser liberado a producción.
 ---
 
 ## 3. Modelo de Datos

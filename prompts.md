@@ -81,6 +81,7 @@ Desarrolla el apartado 2.4 del @readme.md , describiendo con precisión técnica
 ### **2.5. Seguridad**
 
 **Prompt 1:**
+Actúa como arquitecto de software. Necesito que completes la documentación, punto 2.5 Seguridad en @/readme.md.
 
 **Prompt 2:**
 
@@ -89,6 +90,7 @@ Desarrolla el apartado 2.4 del @readme.md , describiendo con precisión técnica
 ### **2.6. Tests**
 
 **Prompt 1:**
+Ahora necesito que completes punto 2.6. Tests en @/readme.md 
 
 **Prompt 2:**
 
