@@ -1118,7 +1118,7 @@ erDiagram
         int id PK
         string nombre
         string email UNIQUE
-        string contraseña
+        string contrasena
         string rol
     }
     Profesional {
@@ -1165,7 +1165,7 @@ erDiagram
   - `id`: Identificador único del usuario.
   - `nombre`: Nombre completo del usuario.
   - `email`: Dirección de correo electrónico única.
-  - `contraseña`: Contraseña cifrada para autenticación.
+  - `contrasena`: Contraseña cifrada para autenticación.
   - `rol`: Rol del usuario (Administrador, Profesional, Cliente).
 - **Relaciones:**
   - Relación uno a uno con las entidades `Profesional` y `Cliente`.
