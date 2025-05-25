@@ -532,7 +532,6 @@ graph TB
     API --> External
 
 ```
-![Diagrama de Arquitectura](images/diagramaArquitectura.png)
 
 La arquitectura de ZenTurno sigue un patrón de Monolito Modular con componentes event-driven, diseñado para optimizar la escalabilidad y mantenibilidad. 
 
@@ -895,8 +894,6 @@ graph TB
     W1 --> REDIS1
     W2 --> REDIS1
 ```
-
-![Diagrama de Infraestructura](images/diagramaInfraestructura.png)
 
 #### Componentes de Infraestructura
 
