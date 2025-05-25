@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:14-alpine
+    container_name: zenturno-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: zenturno
+      POSTGRES_PASSWORD: zenturno123
+      POSTGRES_DB: zenturno
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - zenturno-network
+
+  redis:
+    image: redis:6-alpine
+    container_name: zenturno-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - zenturno-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  zenturno-network:
+    driver: bridge 
