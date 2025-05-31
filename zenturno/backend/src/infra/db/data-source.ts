@@ -4,7 +4,7 @@ import { join } from 'path';
 import { logger } from '../../utils/logger';
 
 // Entities
-// Importa tus entidades aquí
+// Import your entities here
 // import { User } from '../entities/User';
 // import { Professional } from '../entities/Professional';
 // import { Client } from '../entities/Client';
@@ -24,8 +24,8 @@ export const AppDataSource = new DataSource({
   entities: [join(__dirname, '../../domain/entities/**/*.{ts,js}')],
   migrations: [join(__dirname, '../migrations/**/*.{ts,js}')],
   subscribers: [join(__dirname, '../../domain/subscribers/**/*.{ts,js}')],
-  // Opciones adicionales de conexión
-  // SSL para entornos de producción si es necesario
+  // Additional connection options
+  // SSL for production environments if necessary
   ...(config.env === 'production' && {
     ssl: {
       rejectUnauthorized: false
@@ -33,7 +33,7 @@ export const AppDataSource = new DataSource({
   })
 });
 
-// Función para probar la conexión a la base de datos
+// Function to test the database connection
 export const testDatabaseConnection = async (): Promise<boolean> => {
   try {
     await AppDataSource.initialize();
@@ -41,7 +41,7 @@ export const testDatabaseConnection = async (): Promise<boolean> => {
     await AppDataSource.destroy();
     return true;
   } catch (error) {
-    logger.error('Unable to connect to the database:', error);
+    logger.error(`Unable to connect to the database: ${error instanceof Error ? error.message : String(error)}`);
     return false;
   }
 }; 

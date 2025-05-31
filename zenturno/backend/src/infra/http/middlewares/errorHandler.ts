@@ -1,55 +1,105 @@
 import { Request, Response, NextFunction } from 'express';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { logger } from '../../../utils/logger';
 
-// Tipo para errores con código de estado HTTP
-interface HttpError extends Error {
-  status?: number;
-  statusCode?: number;
-}
-
 /**
- * Middleware para manejo centralizado de errores
+ * Middleware to handle application errors
  */
 export const errorHandler = (
-  err: HttpError,
+  error: Error,
   req: Request,
   res: Response,
   next: NextFunction
 ): void => {
-  // Determinar el código de estado HTTP
-  const statusCode = err.status || err.statusCode || 500;
-  
-  // Determinar si es un error de servidor (500+) o del cliente (400-499)
-  const isServerError = statusCode >= 500;
-  
-  // Los errores de servidor se registran con nivel 'error'
-  if (isServerError) {
-    logger.error('Server Error', {
-      error: err.message,
-      stack: err.stack,
-      url: req.originalUrl,
-      method: req.method,
-      ip: req.ip,
-      userId: (req as any).user?.id
+  // Log del error para debugging
+  logger.error(error);
+
+  // Manejar errores específicos de Prisma
+  if (error instanceof PrismaClientKnownRequestError) {
+    // Error P2002: Unique constraint violation
+    if ((error as PrismaClientKnownRequestError).code === 'P2002') {
+      const field = ((error as PrismaClientKnownRequestError).meta?.target as string[])?.join(', ') || 'a field';
+      res.status(409).json({
+        success: false,
+        message: `A record with the same value for ${field} already exists`,
+        error: 'UNIQUE_CONSTRAINT_VIOLATION'
+      });
+      return;
+    }
+
+    // Error P2025: Record not found
+    if ((error as PrismaClientKnownRequestError).code === 'P2025') {
+      res.status(404).json({
+        success: false,
+        message: 'Resource not found',
+        error: 'RECORD_NOT_FOUND'
+      });
+      return;
+    }
+
+    // Error P2003: Foreign key constraint violation
+    if ((error as PrismaClientKnownRequestError).code === 'P2003') {
+      res.status(400).json({
+        success: false,
+        message: 'Invalid reference to a related record',
+        error: 'FOREIGN_KEY_CONSTRAINT_VIOLATION'
+      });
+      return;
+    }
+
+    // Error P2014: Relation violation
+    if ((error as PrismaClientKnownRequestError).code === 'P2014') {
+      res.status(400).json({
+        success: false,
+        message: 'Violation of relationship between records',
+        error: 'RELATION_VIOLATION'
+      });
+      return;
+    }
+
+    // Otros errores de Prisma
+    res.status(500).json({
+      success: false,
+      message: 'Database error',
+      error: (error as PrismaClientKnownRequestError).code
     });
-  } else {
-    // Los errores del cliente se registran con nivel 'warn'
-    logger.warn('Client Error', {
-      error: err.message,
-      url: req.originalUrl,
-      method: req.method,
-      ip: req.ip,
-      userId: (req as any).user?.id
-    });
+    return;
   }
-  
-  // En desarrollo, se envía el stack trace
-  const isDevelopment = process.env.NODE_ENV !== 'production';
-  
-  // Enviar respuesta al cliente
-  res.status(statusCode).json({
+
+  // Manejar errores de validación
+  if (error.name === 'ValidationError') {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+      error: 'VALIDATION_ERROR'
+    });
+    return;
+  }
+
+  // Manejar errores de autenticación
+  if (error.name === 'UnauthorizedError') {
+    res.status(401).json({
+      success: false,
+      message: 'Unauthorized',
+      error: 'UNAUTHORIZED'
+    });
+    return;
+  }
+
+  // Manejar errores de autorización
+  if (error.name === 'ForbiddenError') {
+    res.status(403).json({
+      success: false,
+      message: 'Access forbidden',
+      error: 'FORBIDDEN'
+    });
+    return;
+  }
+
+  // Error genérico para cualquier otro tipo de error
+  res.status(500).json({
     success: false,
-    message: err.message || 'Se ha producido un error',
-    stack: isDevelopment ? err.stack : undefined
+    message: 'Internal server error',
+    error: process.env.NODE_ENV === 'development' ? error.message : 'INTERNAL_SERVER_ERROR'
   });
-}; 
+};

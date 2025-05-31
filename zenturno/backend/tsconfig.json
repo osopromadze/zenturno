@@ -19,7 +19,8 @@
       "@domain/*": ["src/domain/*"],
       "@infra/*": ["src/infra/*"],
       "@config/*": ["src/config/*"],
-      "@utils/*": ["src/utils/*"]
+      "@utils/*": ["src/utils/*"],
+      "@prisma/client": ["../node_modules/@prisma/client"]
     }
   },
   "include": ["src/**/*"],

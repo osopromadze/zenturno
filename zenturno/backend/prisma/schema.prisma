@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int            @id @default(autoincrement())
+  name       String
+  email      String         @unique
+  password   String
+  role       String         @default("client")
+  created_at DateTime       @default(now())
+  updated_at DateTime       @default(now()) @updatedAt
+  client     Client?
+  professional Professional?
+
+  @@map("users")
+}
+
+model Professional {
+  id           Int          @id @default(autoincrement())
+  name         String
+  specialty    String?
+  user_id      Int?         @unique
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @default(now()) @updatedAt
+  user         User?        @relation(fields: [user_id], references: [id])
+  appointments Appointment[]
+
+  @@index([user_id])
+  @@map("professionals")
+}
+
+model Client {
+  id           Int          @id @default(autoincrement())
+  name         String
+  phone        String?
+  user_id      Int?         @unique
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @default(now()) @updatedAt
+  user         User?        @relation(fields: [user_id], references: [id])
+  appointments Appointment[]
+
+  @@index([user_id])
+  @@map("clients")
+}
+
+model Service {
+  id               Int          @id @default(autoincrement())
+  name             String
+  price            Decimal      @db.Decimal(10, 2)
+  duration_minutes Int
+  created_at       DateTime     @default(now())
+  updated_at       DateTime     @default(now()) @updatedAt
+  appointments     Appointment[]
+
+  @@map("services")
+}
+
+model Appointment {
+  id             Int          @id @default(autoincrement())
+  datetime       DateTime
+  client_id      Int?
+  professional_id Int?
+  service_id     Int?
+  status         String       @default("pending")
+  created_at     DateTime     @default(now())
+  updated_at     DateTime     @default(now()) @updatedAt
+  client         Client?      @relation(fields: [client_id], references: [id])
+  professional   Professional? @relation(fields: [professional_id], references: [id])
+  service        Service?     @relation(fields: [service_id], references: [id])
+
+  @@index([client_id])
+  @@index([professional_id])
+  @@index([service_id])
+  @@index([datetime])
+  @@map("appointments")
+}

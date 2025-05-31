@@ -7,10 +7,9 @@ ZenTurno es una plataforma integral de gestión de citas que simplifica la reser
 El proyecto está organizado como un monorepo con las siguientes partes:
 
 - **frontend**: Aplicación web React para clientes y administradores
-- **mobile**: Aplicación móvil React Native para profesionales
+
 - **backend**: API REST en Node.js/Express
-- **workers**: Procesamiento en segundo plano para tareas asíncronas
-- **nginx**: Configuración del servidor web y proxy inverso
+
 - **scripts**: Scripts de automatización para despliegue y configuración
 - **docs**: Documentación técnica y guías de usuario
 
@@ -38,8 +37,7 @@ npm run start:be
 # Iniciar la aplicación frontend
 npm run start:fe
 
-# Iniciar la aplicación móvil
-npm run start:mobile
+
 ```
 
 ## Documentación
@@ -52,4 +50,4 @@ La documentación completa está disponible en el directorio `docs/`:
 
 ## Licencia
 
-Este proyecto está licenciado bajo los términos de la licencia ISC. 
+Este proyecto está licenciado bajo los términos de la licencia ISC.

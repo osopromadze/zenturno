@@ -3,22 +3,14 @@
   "version": "1.0.0",
   "description": "Plataforma integral de gestión de citas",
   "private": true,
-  "workspaces": [
-    "frontend",
-    "backend",
-    "workers/*",
-    "mobile"
-  ],
   "scripts": {
     "start:fe": "cd frontend && npm start",
     "start:be": "cd backend && npm run dev",
-    "start:mobile": "cd mobile && npm start",
     "setup": "npm install && npm run setup:all",
-    "setup:all": "npm run setup:fe && npm run setup:be && npm run setup:mobile",
+    "setup:all": "npm run setup:fe && npm run setup:be",
     "setup:fe": "cd frontend && npm install",
-    "setup:be": "cd backend && npm install",
-    "setup:mobile": "cd mobile && npm install"
+    "setup:be": "cd backend && npm install"
   },
   "author": "",
   "license": "ISC"
-} 
+}
