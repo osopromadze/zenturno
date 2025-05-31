@@ -9,7 +9,7 @@ import MainLayout from './layouts/MainLayout';
 const Home = React.lazy(() => import('./features/home/Home'));
 const Login = React.lazy(() => import('./features/auth/Login'));
 const Register = React.lazy(() => import('./features/auth/Register'));
-const BookAppointment = React.lazy(() => import('./features/appointments/BookAppointment'));
+const ReservaForm = React.lazy(() => import('./components/ReservaForm'));
 const MyAppointments = React.lazy(() => import('./features/appointments/MyAppointments'));
 const NotFound = React.lazy(() => import('./features/errors/NotFound'));
 
@@ -24,7 +24,7 @@ const App: React.FC = () => {
         {/* Rutas con layout principal */}
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
-          <Route path="appointments/book" element={<BookAppointment />} />
+          <Route path="appointments/book" element={<ReservaForm />} />
           <Route path="appointments/my" element={<MyAppointments />} />
         </Route>
         
