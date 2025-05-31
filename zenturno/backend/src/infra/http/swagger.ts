@@ -3,14 +3,14 @@ import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import config from '../../config/config';
 
-// Opciones de configuración de Swagger
+// Swagger configuration options
 const options: swaggerJsdoc.Options = {
   definition: {
     openapi: '3.0.0',
     info: {
       title: 'ZenTurno API',
       version: '1.0.0',
-      description: 'API RESTful para la gestión de citas en ZenTurno',
+      description: 'RESTful API for appointment management in ZenTurno',
       license: {
         name: 'ISC',
         url: 'https://opensource.org/licenses/ISC',
@@ -28,7 +28,7 @@ const options: swaggerJsdoc.Options = {
       },
       {
         url: 'https://api.zenturno.com/api',
-        description: 'Servidor de producción',
+        description: 'Production server',
       },
     ],
     components: {
@@ -49,11 +49,11 @@ const options: swaggerJsdoc.Options = {
             },
             message: {
               type: 'string',
-              example: 'Mensaje de error',
+              example: 'Error message',
             },
           },
         },
-        // Definiciones de esquemas que se pueden reutilizar en toda la documentación
+        // Schema definitions that can be reused throughout the documentation
       },
     },
     security: [
@@ -71,11 +71,11 @@ const options: swaggerJsdoc.Options = {
 const specs = swaggerJsdoc(options);
 
 /**
- * Configura Swagger para la documentación de la API
- * @param app Aplicación Express
+ * Configures Swagger for API documentation
+ * @param app Express Application
  */
 export const setupSwagger = (app: Express): void => {
-  // Middleware para la documentación Swagger
+  // Middleware for Swagger documentation
   app.use(
     '/api-docs',
     swaggerUi.serve,
@@ -86,7 +86,7 @@ export const setupSwagger = (app: Express): void => {
     })
   );
   
-  // Endpoint para obtener la especificación en formato JSON
+  // Endpoint to get the specification in JSON format
   app.get('/api-docs.json', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.send(specs);

@@ -2,7 +2,7 @@
 node_modules/
 frontend/node_modules/
 backend/node_modules/
-mobile/node_modules/
+
 /.pnp
 .pnp.js
 package-lock.json
@@ -42,20 +42,11 @@ yarn-error.log*
 *.sln
 *.sw?
 
-# Mobile
-*.apk
-*.aab
-*.ipa
-*.xcarchive
 
 # Backend
 *.sqlite
 *.db
 
-# NGINX
-/nginx/ssl/*.pem
-/nginx/ssl/*.key
-/nginx/ssl/*.crt
 
 # Cache
-.cache/ 
+.cache/
