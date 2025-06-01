@@ -229,3 +229,97 @@ great, now let's move on @/zenturno/backend/src/infra/http/controllers and write
 > Explain all configs and folder layout decisions.
 
 -----
+
+
+great, now let's try ti run nextjs application so I can browse it and test functionality. As I see in env.local we have supabase url and other properties. You have access to supabase mcp server, so I want you to fill these variables
+
+-----
+
+in the home page, in navbar I only see sign in button, add also sign up button
+
+-----
+
+Now I see signup button but it is just white button with shadow and text is not visible
+
+-----
+
+when user goes to signup or signin screen there is no navbar shown there, so user must click browser back button to go on home screen. Let's fix it
+
+-----
+
+on signin or signup page there is not button where user click, clicking enter button works but we need actual button
+
+-----
+
+find TailAdmin documentation in context7 and always use components from it.
+
+-----
+
+forget tailadmin, remove any references to it and use magic ui with help of its mcp server. Also if you need web search ask perplexity mcp
+
+-----
+
+do we have all necessary libraries installed to use magic UI? As I know it needs shadcn
+
+-----
+
+do not create any magic ui similar components, just use it's components. if you can not execute command in terminal let me kknow and I will do it manually
+
+-----
+
+I executed command in teminal and added magic ui war-background, ripple-button and aurora-text
+
+-----
+
+use magic ui on home page, if you need any element let me know and I will install
+
+-----
+
+
+remove globe from hero section. use this magic ui template called `SaaS Template`
+https://saas-magicui.vercel.app/
+
+-----
+
+in home page implement navbar similar to this magic ui template https://saas-magicui.vercel.app/
+
+-----
+
+now it is great, just one correction. behind navbar there is white background which is not needed, navbar can be directly on top of hero section
+
+-----
+
+
+now let's implement signup page similar to this magic ui template
+https://saas-magicui.vercel.app/signup
+
+Maybe there are some inputs which we do not need or maybe we have more inputs, adapt it to our project needs
+
+-----
+
+on signup page we have warp background which is annoying. Vhange it to magic ui dot pattern, also remove meteors from signup card. Also remove left side of signup screen where are svg, just leave input form
+
+-----
+now I see dot pattern. Let's make signup form less wide, also add meteors to whole page background with dot pattern
+
+-----
+
+remove meteors from background, does not look good. also make border-beam more visible and slower
+
+-----
+
+do not modify any components inside @zenturno-next/src/components/magicui they are downloaded, just pass different values in parameters when I ask to modify
+
+-----
+use same styles for signin page
+
+-----
+login form inputs are not same as register, use magic ui
+
+-----
+remove navbar from auth pages, take same logo from home page and put on top center of auth pages, it must be clickable and take user to home screen
+
+-----
+expand dot pattern background on auth page to every element, logo and form 
+
+-----

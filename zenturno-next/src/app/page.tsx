@@ -1,68 +1,238 @@
+"use client";
+
 import Image from "next/image";
 import Link from 'next/link';
+import { WarpBackground } from '@/components/magicui/warp-background';
+import { AuroraText } from '@/components/magicui/aurora-text';
+import { RippleButton } from '@/components/magicui/ripple-button';
+import { ScrollProgress } from '@/components/magicui/scroll-progress';
+import { Meteors } from '@/components/magicui/meteors';
+import { MagicCard } from '@/components/magicui/magic-card';
+import { Marquee } from '@/components/magicui/marquee';
+import { BorderBeam } from '@/components/magicui/border-beam';
+import { Particles } from '@/components/magicui/particles';
+import { cn } from '@/lib/utils';
+import { useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="min-h-screen flex flex-col">
-      {/* Navigation */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center">
-              <span className="text-2xl font-bold text-primary-600">ZenTurno</span>
-            </div>
-            <div className="flex space-x-4">
-              <Link 
-                href="/login"
-                className="px-4 py-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-              >
-                Sign In
-              </Link>
-              <Link 
-                href="/signup"
-                className="px-4 py-2 rounded-md bg-primary-600 text-white hover:bg-primary-700"
-              >
-                Sign Up
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary-500 to-primary-700 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="md:w-1/2 mb-10 md:mb-0">
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                Simplify Your Appointment Booking
-              </h1>
-              <p className="text-xl mb-8">
-                ZenTurno makes it easy to book and manage appointments with professionals.
-              </p>
-              <div className="flex space-x-4">
+  return (
+    <div className="min-h-screen flex flex-col relative overflow-hidden bg-blue-950">
+      <ScrollProgress />
+      {/* Navigation */}
+      <header className="fixed top-0 left-0 right-0 z-50">
+        <nav className="border-b border-white/10 backdrop-blur-md bg-black/40">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between h-16 items-center">
+              {/* Logo */}
+              <div className="flex items-center">
+                <Link href="/" className="flex items-center space-x-2">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-500/20">Z</div>
+                  <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-indigo-500">ZenTurno</span>
+                </Link>
+              </div>
+              
+              {/* Desktop Navigation */}
+              <div className="hidden md:flex items-center space-x-8">
+                <Link href="#features" className="text-sm font-medium text-white hover:text-blue-300 transition-colors">
+                  Features
+                </Link>
+                <Link href="#pricing" className="text-sm font-medium text-white hover:text-blue-300 transition-colors">
+                  Pricing
+                </Link>
+                <Link href="#testimonials" className="text-sm font-medium text-white hover:text-blue-300 transition-colors">
+                  Testimonials
+                </Link>
+                <Link href="#faq" className="text-sm font-medium text-white hover:text-blue-300 transition-colors">
+                  FAQ
+                </Link>
+              </div>
+              
+              {/* CTA Buttons */}
+              <div className="flex items-center space-x-4">
                 <Link 
-                  href="/signup"
-                  className="px-6 py-3 rounded-md bg-white text-primary-600 font-semibold hover:bg-gray-100"
+                  href="/login"
+                  className="hidden sm:inline-flex px-4 py-2 text-sm font-medium text-white hover:text-blue-300 transition-colors"
                 >
-                  Get Started
+                  Sign In
                 </Link>
                 <Link 
-                  href="#features"
-                  className="px-6 py-3 rounded-md border border-white text-white font-semibold hover:bg-primary-600"
+                  href="/signup"
+                  className="px-4 py-2 rounded-full text-sm font-medium bg-white/10 hover:bg-white/20 text-white border border-white/10 transition-all duration-200 backdrop-blur-sm shadow-lg shadow-blue-500/10"
                 >
-                  Learn More
+                  Sign Up Free
+                </Link>
+                
+                {/* Mobile menu button */}
+                <button 
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="md:hidden rounded-md p-2 text-white hover:text-blue-300 hover:bg-white/10 transition-colors"
+                  aria-expanded={mobileMenuOpen}
+                  aria-label="Toggle menu"
+                >
+                  {mobileMenuOpen ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+            </div>
+            
+            {/* Mobile menu, show/hide based on menu state */}
+            <div 
+              className={`md:hidden transition-all duration-300 ease-in-out overflow-hidden ${mobileMenuOpen ? 'max-h-64 opacity-100 pb-4' : 'max-h-0 opacity-0'}`}
+            >
+              <div className="space-y-2 pt-2">
+                <Link 
+                  href="#features" 
+                  className="block px-3 py-2 text-base font-medium text-white hover:bg-white/10 rounded-md transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Features
+                </Link>
+                <Link 
+                  href="#pricing" 
+                  className="block px-3 py-2 text-base font-medium text-white hover:bg-white/10 rounded-md transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Pricing
+                </Link>
+                <Link 
+                  href="#testimonials" 
+                  className="block px-3 py-2 text-base font-medium text-white hover:bg-white/10 rounded-md transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Testimonials
+                </Link>
+                <Link 
+                  href="#faq" 
+                  className="block px-3 py-2 text-base font-medium text-white hover:bg-white/10 rounded-md transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  FAQ
+                </Link>
+                <Link 
+                  href="/login" 
+                  className="block px-3 py-2 text-base font-medium text-white hover:bg-white/10 rounded-md transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Sign In
                 </Link>
               </div>
             </div>
-            <div className="md:w-1/2">
-              <div className="bg-white p-4 rounded-lg shadow-lg">
-                <div className="w-full h-64 bg-gray-200 rounded flex items-center justify-center">
-                  <span className="text-4xl">📅</span>
+          </div>
+        </nav>
+      </header>
+
+      {/* Hero Section */}
+      <section className="relative text-white pt-32 pb-24 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-950 via-blue-900 to-indigo-900 z-0"></div>
+        <Particles
+          className="absolute inset-0 z-10"
+          particleColor="rgba(255, 255, 255, 0.3)"
+          quantity={100}
+          staticity={30}
+        />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
+          <div className="text-center max-w-3xl mx-auto">
+            <BorderBeam
+              className="inline-block mb-6 rounded-full px-4 py-1.5 text-sm font-medium"
+              duration={20}
+              size={500}
+              delay={0.1}
+              colorFrom="rgb(125, 211, 252)"
+              colorTo="rgb(125, 211, 252)"
+            >
+              <span className="relative z-10 text-blue-100">✨ Appointment booking made simple</span>
+            </BorderBeam>
+            <AuroraText
+              className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight"
+              colors={["#FFFFFF", "#A5F3FC", "#BAE6FD"]}
+            >
+              Simplify Your Appointment Booking
+            </AuroraText>
+            <p className="text-xl mb-10 text-blue-100 max-w-2xl mx-auto">
+              ZenTurno makes it easy to book and manage appointments with professionals.
+              Save time, reduce no-shows, and grow your business.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+              <Link href="/signup">
+                <RippleButton 
+                  className="px-8 py-4 rounded-md bg-white text-blue-600 font-semibold hover:bg-gray-100 border-0 shadow-lg"
+                  rippleColor="rgba(59, 130, 246, 0.4)"
+                >
+                  Get Started Free
+                </RippleButton>
+              </Link>
+              <Link href="#features">
+                <RippleButton 
+                  className="px-8 py-4 rounded-md border border-white/30 bg-white/10 backdrop-blur-sm text-white font-semibold hover:bg-white/20"
+                  rippleColor="rgba(255, 255, 255, 0.4)"
+                >
+                  See How It Works
+                </RippleButton>
+              </Link>
+            </div>
+            <div className="mt-12 bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20 shadow-xl max-w-2xl mx-auto">
+              <div className="relative aspect-video rounded-lg overflow-hidden bg-gradient-to-br from-blue-900 to-indigo-800 flex items-center justify-center">
+                <div className="absolute inset-0 flex flex-col">
+                  {/* Dashboard mockup UI */}
+                  <div className="h-12 bg-blue-800/50 border-b border-white/10 flex items-center px-4">
+                    <div className="w-3 h-3 rounded-full bg-red-400 mr-2"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-400 mr-2"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-400 mr-2"></div>
+                    <div className="flex-1"></div>
+                    <div className="w-24 h-6 rounded-md bg-white/10"></div>
+                  </div>
+                  <div className="flex flex-1">
+                    {/* Sidebar */}
+                    <div className="w-1/4 bg-blue-950/30 border-r border-white/10 p-4 space-y-4">
+                      <div className="w-full h-8 rounded-md bg-white/10"></div>
+                      <div className="w-full h-8 rounded-md bg-white/10"></div>
+                      <div className="w-full h-8 rounded-md bg-blue-500/50"></div>
+                      <div className="w-full h-8 rounded-md bg-white/10"></div>
+                    </div>
+                    {/* Main content */}
+                    <div className="flex-1 p-4 space-y-4">
+                      <div className="w-full h-10 rounded-md bg-white/10"></div>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="h-24 rounded-md bg-blue-500/20 border border-blue-500/30"></div>
+                        <div className="h-24 rounded-md bg-purple-500/20 border border-purple-500/30"></div>
+                        <div className="h-24 rounded-md bg-green-500/20 border border-green-500/30"></div>
+                      </div>
+                      <div className="w-full h-48 rounded-md bg-white/10"></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-12 bg-gray-100 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">What Our Users Say</h2>
+          <Marquee pauseOnHover className="py-4">
+            {[
+              "ZenTurno has completely transformed how I manage my salon appointments! - Sarah K.",
+              "No more double bookings or scheduling headaches. Highly recommended! - Michael T.",
+              "My clients love how easy it is to book appointments online. - Jessica R.",
+              "The best scheduling platform I've used in my 10 years as a professional. - David M.",
+              "Simple, intuitive, and reliable. Just what my business needed. - Laura B.",
+            ].map((testimonial, i) => (
+              <div key={i} className="mx-4 px-8 py-4 bg-white rounded-lg shadow-md min-w-[300px]">
+                <p className="text-gray-700">"{testimonial}"</p>
+              </div>
+            ))}
+          </Marquee>
         </div>
       </section>
 
@@ -112,24 +282,38 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-primary-600 text-white">
+      <section className="py-16 relative text-white overflow-hidden">
+        <div className="absolute inset-0 bg-blue-600 z-0"></div>
+        <Meteors 
+          number={20} 
+          className="z-0" 
+        />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
+          <AuroraText
+            className="text-3xl font-bold mb-4"
+            colors={["#FFFFFF", "#A5F3FC", "#BAE6FD"]}
+          >
+            Ready to Get Started?
+          </AuroraText>
           <p className="text-xl mb-8 max-w-3xl mx-auto">
             Join ZenTurno today and transform how you manage appointments.
           </p>
           <div className="flex justify-center space-x-4">
-            <Link 
-              href="/signup"
-              className="px-6 py-3 rounded-md bg-white text-primary-600 font-semibold hover:bg-gray-100"
-            >
-              Sign Up Now
+            <Link href="/signup">
+              <RippleButton 
+                className="px-6 py-3 rounded-md bg-white text-blue-600 font-semibold hover:bg-gray-100 border-0"
+                rippleColor="rgba(59, 130, 246, 0.4)"
+              >
+                Sign Up Now
+              </RippleButton>
             </Link>
-            <Link 
-              href="/login"
-              className="px-6 py-3 rounded-md border border-white text-white font-semibold hover:bg-primary-500"
-            >
-              Sign In
+            <Link href="/login">
+              <RippleButton 
+                className="px-6 py-3 rounded-md border border-white text-white font-semibold hover:bg-blue-500"
+                rippleColor="rgba(255, 255, 255, 0.4)"
+              >
+                Sign In
+              </RippleButton>
             </Link>
           </div>
         </div>
@@ -178,10 +362,12 @@ export default function Home() {
 
 function FeatureCard({ title, description, icon }: { title: string; description: string; icon: string }) {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-      <div className="text-4xl mb-4">{icon}</div>
-      <h3 className="text-xl font-semibold mb-2">{title}</h3>
-      <p className="text-gray-600">{description}</p>
-    </div>
+    <MagicCard className="bg-white p-6 rounded-lg shadow-md border border-transparent">
+      <div className="relative z-10">
+        <div className="text-4xl mb-4 transform group-hover:scale-110 transition-transform duration-300">{icon}</div>
+        <h3 className="text-xl font-semibold mb-2 text-gray-900 group-hover:text-blue-600 transition-colors duration-300">{title}</h3>
+        <p className="text-gray-600">{description}</p>
+      </div>
+    </MagicCard>
   );
 }

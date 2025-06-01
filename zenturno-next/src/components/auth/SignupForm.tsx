@@ -39,7 +39,7 @@ export default function SignupForm() {
           name="name"
           type="text"
           required
-          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           disabled={loading}
         />
       </div>
@@ -53,7 +53,7 @@ export default function SignupForm() {
           name="email"
           type="email"
           required
-          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           disabled={loading}
         />
       </div>
@@ -67,7 +67,7 @@ export default function SignupForm() {
           name="password"
           type="password"
           required
-          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           disabled={loading}
           minLength={8}
         />
@@ -84,7 +84,7 @@ export default function SignupForm() {
           id="role"
           name="role"
           required
-          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           disabled={loading}
           defaultValue="client"
         >
@@ -102,7 +102,7 @@ export default function SignupForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-2 px-4 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {loading ? 'Creating Account...' : 'Create Account'}
       </button>

@@ -47,10 +47,10 @@ export async function registerUser(formData: FormData) {
     const { error: dbError } = await supabase
       .from('users')
       .insert({
-        name: userDTO.name,
+        first_name: userDTO.name, // Using name as first_name for now
         email: userDTO.email,
-        password: userDTO.password, // Use hashed password for database
         role: userDTO.role,
+        // No need to store password in our custom users table as Supabase handles auth
       })
     
     if (dbError) {

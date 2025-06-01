@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import SignupForm from '@/components/auth/SignupForm'
+import MagicSignupForm from '@/components/auth/MagicSignupForm'
+import MagicAuthLayout from '@/components/auth/MagicAuthLayout'
 
 export default async function SignupPage() {
   // Create Supabase client
@@ -15,26 +16,12 @@ export default async function SignupPage() {
   }
   
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold">Create an Account</h1>
-          <p className="mt-2 text-gray-600">
-            Join ZenTurno to book and manage appointments
-          </p>
-        </div>
-        
-        <SignupForm />
-        
-        <div className="text-center mt-4">
-          <p className="text-sm text-gray-600">
-            Already have an account?{' '}
-            <a href="/login" className="text-primary-600 hover:underline">
-              Sign in
-            </a>
-          </p>
-        </div>
-      </div>
-    </div>
+    <MagicAuthLayout 
+      title="Create an Account"
+      subtitle="Register to start managing your appointments"
+      showLogo={true}
+    >
+      <MagicSignupForm />
+    </MagicAuthLayout>
   )
 }

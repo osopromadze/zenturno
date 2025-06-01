@@ -6,6 +6,8 @@
 - Material-UI: /mui/material-ui
 - React Router: /remix-run/react-router
 - TypeScript: /microsoft/typescript
+- TailAdmin (Next.js): /tailadmin/free-nextjs-admin-dashboard
+- TailAdmin (React): /tailadmin/free-react-tailwind-admin-dashboard
 
 ## Backend Technologies
 - Node.js: /nodejs/node
