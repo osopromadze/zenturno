@@ -144,13 +144,20 @@ export class ProfessionalRepository {
      */
     async getAvailability(professionalId: number, date: Date): Promise<Date[]> {
         try {
+            // Create start and end dates for the day without mutating the original date
+            const startOfDay = new Date(date.getTime());
+            startOfDay.setHours(0, 0, 0, 0);
+            
+            const endOfDay = new Date(date.getTime());
+            endOfDay.setHours(23, 59, 59, 999);
+            
             // Get all appointments for this professional on the given date
             const appointments = await prisma.appointment.findMany({
                 where: {
                     professional_id: professionalId,
                     datetime: {
-                        gte: new Date(date.setHours(0, 0, 0, 0)),
-                        lt: new Date(date.setHours(23, 59, 59, 999))
+                        gte: startOfDay,
+                        lt: endOfDay
                     }
                 },
                 include: {
@@ -166,9 +173,11 @@ export class ProfessionalRepository {
 
             // Generate all possible time slots
             const allSlots: Date[] = [];
+            const dateForSlots = new Date(date.getTime()); // Create a fresh copy for slot generation
+            
             for (let hour = startHour; hour < endHour; hour++) {
                 for (let minute = 0; minute < 60; minute += slotDuration) {
-                    const slot = new Date(date);
+                    const slot = new Date(dateForSlots.getTime());
                     slot.setHours(hour, minute, 0, 0);
                     allSlots.push(slot);
                 }
@@ -178,16 +187,17 @@ export class ProfessionalRepository {
             return allSlots.filter(slot => {
                 return !appointments.some((appointment: { datetime: Date; service?: { duration_minutes?: number } | null }) => {
                     const appointmentStart = new Date(appointment.datetime);
-                    const appointmentEnd = new Date(appointmentStart);
+                    const appointmentEnd = new Date(appointmentStart.getTime());
                     appointmentEnd.setMinutes(appointmentEnd.getMinutes() + (appointment.service?.duration_minutes || 30));
 
-                    const slotEnd = new Date(slot);
+                    const slotEnd = new Date(slot.getTime());
                     slotEnd.setMinutes(slotEnd.getMinutes() + slotDuration);
 
+                    // Check for any overlap between the slot and the appointment
                     return (
-                        (slot >= appointmentStart && slot < appointmentEnd) ||
-                        (slotEnd > appointmentStart && slotEnd <= appointmentEnd) ||
-                        (slot <= appointmentStart && slotEnd >= appointmentEnd)
+                        (slot.getTime() >= appointmentStart.getTime() && slot.getTime() < appointmentEnd.getTime()) ||
+                        (slotEnd.getTime() > appointmentStart.getTime() && slotEnd.getTime() <= appointmentEnd.getTime()) ||
+                        (slot.getTime() <= appointmentStart.getTime() && slotEnd.getTime() >= appointmentEnd.getTime())
                     );
                 });
             });

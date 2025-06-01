@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { ServiceRepository } from '../../repositories/prisma/ServiceRepository';
 import { logger } from '../../../utils/logger';
+import { ServiceRepository } from '../../repositories/prisma/ServiceRepository';
 
 // Singleton instance of ServiceRepository
 const serviceRepository = new ServiceRepository();

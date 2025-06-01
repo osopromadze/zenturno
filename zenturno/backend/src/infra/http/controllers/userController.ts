@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
 import { UserRepository } from '../../repositories/prisma/UserRepository';
 import { logger } from '../../../utils/logger';
+import { prisma } from '../../db/prisma';
 
-// Singleton instance of UserRepository
-const userRepository = new UserRepository();
+// Singleton instance of UserRepository with proper dependencies
+const userRepository = new UserRepository(prisma, logger);
 
 /**
  * Retrieves the authenticated user's profile

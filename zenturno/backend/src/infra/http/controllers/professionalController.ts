@@ -2,10 +2,11 @@ import { Request, Response } from 'express';
 import { ProfessionalRepository } from '../../repositories/prisma/ProfessionalRepository';
 import { UserRepository } from '../../repositories/prisma/UserRepository';
 import { logger } from '../../../utils/logger';
+import { prisma } from '../../db/prisma';
 
-// Singleton instances of repositories
+// Singleton instances of repositories with proper dependencies
 const professionalRepository = new ProfessionalRepository();
-const userRepository = new UserRepository();
+const userRepository = new UserRepository(prisma, logger);
 
 /**
  * Gets all professionals

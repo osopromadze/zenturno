@@ -3,9 +3,10 @@ import { UserRepository } from '../../repositories/prisma/UserRepository';
 import { compare, hash } from 'bcrypt';
 import { sign, SignOptions } from 'jsonwebtoken';
 import { logger } from '../../../utils/logger';
+import { prisma } from '../../db/prisma';
 
-// Singleton instance of UserRepository
-const userRepository = new UserRepository();
+// Singleton instance of UserRepository with proper dependencies
+const userRepository = new UserRepository(prisma, logger);
 
 /**
  * Handles user login

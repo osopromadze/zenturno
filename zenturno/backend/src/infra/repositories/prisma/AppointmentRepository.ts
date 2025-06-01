@@ -1,6 +1,7 @@
-import { prisma } from '../../db/prisma';
-import { Appointment } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+import { prisma } from '../../db/prisma'; // Keep for now, but will be removed if constructor injection is fully adopted
 import { logger } from '../../../utils/logger';
+import { Appointment } from '@prisma/client';
 
 export interface CreateAppointmentInput {
     datetime: Date;
@@ -28,12 +29,19 @@ export interface AppointmentFilter {
 }
 
 export class AppointmentRepository {
+    private prisma: PrismaClient;
+    private logger: typeof logger;
+
+    constructor(prismaClient: PrismaClient, loggerInstance: typeof logger) {
+        this.prisma = prismaClient;
+        this.logger = loggerInstance;
+    }
     /**
      * Find an appointment by ID
      */
     async findById(id: number): Promise<Appointment | null> {
         try {
-            return await prisma.appointment.findUnique({
+            return await this.prisma.appointment.findUnique({
                 where: { id },
                 include: {
                     client: true,
@@ -42,7 +50,7 @@ export class AppointmentRepository {
                 }
             });
         } catch (error) {
-            logger.error(`Error finding appointment by ID: ${error instanceof Error ? error.message : String(error)}`);
+            this.logger.error(`Error finding appointment by ID: ${error instanceof Error ? error.message : String(error)}`);
             throw error;
         }
     }
@@ -52,7 +60,7 @@ export class AppointmentRepository {
      */
     async create(data: CreateAppointmentInput): Promise<Appointment> {
         try {
-            return await prisma.appointment.create({
+            return await this.prisma.appointment.create({
                 data,
                 include: {
                     client: true,
@@ -61,7 +69,7 @@ export class AppointmentRepository {
                 }
             });
         } catch (error) {
-            logger.error(`Error creating appointment: ${error instanceof Error ? error.message : String(error)}`);
+            this.logger.error(`Error creating appointment: ${error instanceof Error ? error.message : String(error)}`);
             throw error;
         }
     }
@@ -71,7 +79,7 @@ export class AppointmentRepository {
      */
     async update(id: number, data: UpdateAppointmentInput): Promise<Appointment> {
         try {
-            return await prisma.appointment.update({
+            return await this.prisma.appointment.update({
                 where: { id },
                 data,
                 include: {
@@ -81,7 +89,7 @@ export class AppointmentRepository {
                 }
             });
         } catch (error) {
-            logger.error(`Error updating appointment: ${error instanceof Error ? error.message : String(error)}`);
+            this.logger.error(`Error updating appointment: ${error instanceof Error ? error.message : String(error)}`);
             throw error;
         }
     }
@@ -91,11 +99,11 @@ export class AppointmentRepository {
      */
     async delete(id: number): Promise<Appointment> {
         try {
-            return await prisma.appointment.delete({
+            return await this.prisma.appointment.delete({
                 where: { id }
             });
         } catch (error) {
-            logger.error(`Error deleting appointment: ${error instanceof Error ? error.message : String(error)}`);
+            this.logger.error(`Error deleting appointment: ${error instanceof Error ? error.message : String(error)}`);
             throw error;
         }
     }
@@ -105,7 +113,7 @@ export class AppointmentRepository {
      */
     async findAll(): Promise<Appointment[]> {
         try {
-            return await prisma.appointment.findMany({
+            return await this.prisma.appointment.findMany({
                 include: {
                     client: true,
                     professional: true,
@@ -116,7 +124,7 @@ export class AppointmentRepository {
                 }
             });
         } catch (error) {
-            logger.error(`Error finding all appointments: ${error instanceof Error ? error.message : String(error)}`);
+            this.logger.error(`Error finding all appointments: ${error instanceof Error ? error.message : String(error)}`);
             throw error;
         }
     }
@@ -126,7 +134,7 @@ export class AppointmentRepository {
      */
     async findByClientId(clientId: number): Promise<Appointment[]> {
         try {
-            return await prisma.appointment.findMany({
+            return await this.prisma.appointment.findMany({
                 where: {
                     client_id: clientId
                 },
@@ -139,7 +147,7 @@ export class AppointmentRepository {
                 }
             });
         } catch (error) {
-            logger.error(`Error finding appointments by client ID: ${error instanceof Error ? error.message : String(error)}`);
+            this.logger.error(`Error finding appointments by client ID: ${error instanceof Error ? error.message : String(error)}`);
             throw error;
         }
     }
@@ -149,7 +157,7 @@ export class AppointmentRepository {
      */
     async findByProfessionalId(professionalId: number): Promise<Appointment[]> {
         try {
-            return await prisma.appointment.findMany({
+            return await this.prisma.appointment.findMany({
                 where: {
                     professional_id: professionalId
                 },
@@ -162,7 +170,7 @@ export class AppointmentRepository {
                 }
             });
         } catch (error) {
-            logger.error(`Error finding appointments by professional ID: ${error instanceof Error ? error.message : String(error)}`);
+            this.logger.error(`Error finding appointments by professional ID: ${error instanceof Error ? error.message : String(error)}`);
             throw error;
         }
     }
@@ -172,7 +180,7 @@ export class AppointmentRepository {
      */
     async findByDateRange(startDate: Date, endDate: Date): Promise<Appointment[]> {
         try {
-            return await prisma.appointment.findMany({
+            return await this.prisma.appointment.findMany({
                 where: {
                     datetime: {
                         gte: startDate,
@@ -189,7 +197,7 @@ export class AppointmentRepository {
                 }
             });
         } catch (error) {
-            logger.error(`Error finding appointments by date range: ${error instanceof Error ? error.message : String(error)}`);
+            this.logger.error(`Error finding appointments by date range: ${error instanceof Error ? error.message : String(error)}`);
             throw error;
         }
     }
@@ -199,7 +207,7 @@ export class AppointmentRepository {
      */
     async findByStatus(status: string): Promise<Appointment[]> {
         try {
-            return await prisma.appointment.findMany({
+            return await this.prisma.appointment.findMany({
                 where: {
                     status
                 },
@@ -213,7 +221,7 @@ export class AppointmentRepository {
                 }
             });
         } catch (error) {
-            logger.error(`Error finding appointments by status: ${error instanceof Error ? error.message : String(error)}`);
+            this.logger.error(`Error finding appointments by status: ${error instanceof Error ? error.message : String(error)}`);
             throw error;
         }
     }
@@ -251,7 +259,7 @@ export class AppointmentRepository {
                 }
             }
 
-            return await prisma.appointment.findMany({
+            return await this.prisma.appointment.findMany({
                 where,
                 include: {
                     client: true,
@@ -263,7 +271,7 @@ export class AppointmentRepository {
                 }
             });
         } catch (error) {
-            logger.error(`Error finding appointments with filters: ${error instanceof Error ? error.message : String(error)}`);
+            this.logger.error(`Error finding appointments with filters: ${error instanceof Error ? error.message : String(error)}`);
             throw error;
         }
     }
@@ -273,7 +281,7 @@ export class AppointmentRepository {
      */
     async cancelAppointment(id: number): Promise<Appointment> {
         try {
-            return await prisma.appointment.update({
+            return await this.prisma.appointment.update({
                 where: { id },
                 data: {
                     status: 'cancelled'
@@ -285,7 +293,7 @@ export class AppointmentRepository {
                 }
             });
         } catch (error) {
-            logger.error(`Error canceling appointment: ${error instanceof Error ? error.message : String(error)}`);
+            this.logger.error(`Error canceling appointment: ${error instanceof Error ? error.message : String(error)}`);
             throw error;
         }
     }
@@ -295,7 +303,7 @@ export class AppointmentRepository {
      */
     async completeAppointment(id: number): Promise<Appointment> {
         try {
-            return await prisma.appointment.update({
+            return await this.prisma.appointment.update({
                 where: { id },
                 data: {
                     status: 'completed'
@@ -307,7 +315,7 @@ export class AppointmentRepository {
                 }
             });
         } catch (error) {
-            logger.error(`Error completing appointment: ${error instanceof Error ? error.message : String(error)}`);
+            this.logger.error(`Error completing appointment: ${error instanceof Error ? error.message : String(error)}`);
             throw error;
         }
     }
@@ -322,7 +330,7 @@ export class AppointmentRepository {
             const endTime = new Date(date);
             endTime.setMinutes(endTime.getMinutes() + durationMinutes);
 
-            const conflictingAppointments = await prisma.appointment.findMany({
+            const conflictingAppointments = await this.prisma.appointment.findMany({
                 where: {
                     professional_id: professionalId,
                     status: {
@@ -357,7 +365,7 @@ export class AppointmentRepository {
 
             return conflictingAppointments.length > 0;
         } catch (error) {
-            logger.error(`Error checking for appointment conflicts: ${error instanceof Error ? error.message : String(error)}`);
+            this.logger.error(`Error checking for appointment conflicts: ${error instanceof Error ? error.message : String(error)}`);
             throw error;
         }
     }

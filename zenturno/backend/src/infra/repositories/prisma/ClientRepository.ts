@@ -4,14 +4,14 @@ import { logger } from '../../../utils/logger';
 
 export interface CreateClientInput {
     name: string;
-    phone?: string;
-    user_id?: number;
+    phone: string | null;
+    user_id: number | null;
 }
 
 export interface UpdateClientInput {
     name?: string;
-    phone?: string;
-    user_id?: number;
+    phone?: string | null;
+    user_id?: number | null;
 }
 
 export class ClientRepository {

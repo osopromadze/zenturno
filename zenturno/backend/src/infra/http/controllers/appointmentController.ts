@@ -4,9 +4,10 @@ import { ClientRepository } from '../../repositories/prisma/ClientRepository';
 import { ProfessionalRepository } from '../../repositories/prisma/ProfessionalRepository';
 import { ServiceRepository } from '../../repositories/prisma/ServiceRepository';
 import { logger } from '../../../utils/logger';
+import { prisma } from '../../db/prisma';
 
-// Singleton instances of repositories
-const appointmentRepository = new AppointmentRepository();
+// Singleton instances of repositories with proper dependencies
+const appointmentRepository = new AppointmentRepository(prisma, logger);
 const clientRepository = new ClientRepository();
 const professionalRepository = new ProfessionalRepository();
 const serviceRepository = new ServiceRepository();
