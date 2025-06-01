@@ -132,3 +132,100 @@ create tests for @ProfessionalRepository.ts similar to other tests in @zenturno/
 -----
 great, now let's move on @/zenturno/backend/src/infra/http/controllers and write unit tests for them
 -----
+> You are now an expert backend architect and software engineer. Our current prject that lacks a proper architecture. I want you to guide and implement a **refactor** using **Domain-Driven Design (DDD)** and **Hexagonal Architecture (Ports and Adapters)**.
+>
+> ## Goal:
+>
+> Migrate the project to follow proper software architecture principles with clear separation of concerns:
+>
+> * Use **DDD**: Define core **domains**, **entities**, **value objects**, **aggregates**, **repositories**, **services**, and **use cases (application layer)**.
+> * Use **Hexagonal Architecture**: External layers (web, database, etc.) should communicate through **ports (interfaces)** and **adapters (implementations)**.
+>
+> ## Instructions:
+>
+> 1. Begin **step-by-step**, **feature-by-feature** (choose a small feature like "User Registration").
+> 2. For each step:
+>
+>    * Explain the **goal** of the step.
+>    * Create or refactor code files into the correct **DDD + Hexagonal** structure:
+>
+>      * `/src/domain`
+>      * `/src/application`
+>      * `/src/infrastructure` (adapters like DB, API, etc.)
+>      * `/src/interfaces` (e.g. REST controllers, CLI)
+>    * Use proper **TypeScript** types if possible (or JS + JSDoc if TS is not available).
+>    * Add comments to explain **why** certain choices are made.
+> 3. Maintain **testability**: structure code so each layer can be unit-tested independently.
+> 4. Use best practices for error handling, dependency injection, and clean code.
+>
+> ## Constraints:
+>
+> * Avoid monolithic file structure.
+> * Use dependency inversion for services (inject repositories via interfaces).
+> * Avoid putting logic in the controllers or database layer.
+>
+> ## First Task:
+>
+> Start by analyzing the current "User Registration" feature (or mock one if not available). Implement it using DDD + Hexagonal approach. Provide code for:
+>
+> * Entity and value objects
+> * Domain service (if needed)
+> * Use case (application service)
+> * Repository interface
+> * In-memory repository implementation
+> * REST API controller adapter
+
+-----
+
+> You are an expert full-stack architect and Next.js developer. I have an existing project with a **separate frontend and backend** (e.g., frontend built with React, backend built with Express.js or similar). I want to **migrate everything into a single codebase** using **Next.js (App Router)** to enable full-stack development.
+>
+> ## Goals:
+>
+> 1. Migrate all frontend and backend functionality into a **monorepo** powered by **Next.js**.
+> 2. Use **Next.js App Router** (based in `/app`) with server actions and route handlers for backend logic.
+> 3. Use **Supabase** for:
+>
+>    * Authentication (sign in, sign up, session handling)
+>    * Database (PostgreSQL via Supabase client)
+> 4. Eliminate the need for a separate Express.js server.
+>
+> ## Instructions:
+>
+> Proceed **step-by-step** and **feature-by-feature**. For each step:
+>
+> 1. Explain the purpose and give a high-level migration plan.
+> 2. Migrate a specific feature (e.g., "User Login", "User Profile") by:
+>
+>    * Creating appropriate **pages** or **server actions** under `/app`
+>    * Creating **API route handlers** under `/app/api` if needed
+>    * Replacing Express endpoints with **Next.js server functions**
+>    * Integrating Supabase SDK (use `@supabase/supabase-js`) for auth and DB operations
+> 3. Implement proper folder structure using:
+>
+>    * `/app` for pages, layouts, server components
+>    * `/lib` for reusable server/client logic
+>    * `/db` or `/supabase` for Supabase client and typed queries
+>    * `/components` for UI components
+> 4. Make sure **auth state** is handled via `@supabase/auth-helpers-nextjs` or cookies
+> 5. Add **environment variables** for Supabase URL and keys in `.env.local`
+>
+> ## Constraints:
+>
+> * Do not use Express anymore; move all backend logic to Next.js APIs or server components
+> * Migrate UI to use **Next.js layouts**, **React Server Components**, and **Client Components** where necessary
+> * Ensure that auth-protected routes verify session using Supabase
+> * Use **PostgreSQL queries** via Supabase client, not ORMs unless strictly needed
+> * Ensure all existing frontend functionality (pages, forms, data fetching) is preserved or improved
+>
+> ## First Task:
+>
+> Start by setting up a new Next.js 14+ App Router project with:
+>
+> * Supabase client initialized
+> * Supabase auth helpers configured
+> * `/app/login` and `/app/signup` pages using Supabase auth
+> * `/app/dashboard` page that is protected (only accessible with active session)
+>
+> Explain all configs and folder layout decisions.
+
+-----

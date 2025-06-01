@@ -1,44 +1,12 @@
 import 'dotenv/config';
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import rateLimit from 'express-rate-limit';
-
+import { Server } from 'http';
+import { createApp } from './app';
 import { testDatabaseConnection, disconnectDatabase } from './infra/db/prisma';
-import { setupRoutes } from './infra/http/routes';
-import { errorHandler } from './infra/http/middlewares/errorHandler';
 import { logger } from './utils/logger';
 
-import { setupSwagger } from './infra/http/swagger';
-
-import { Server } from 'http';
-
-// Initialize the Express application
-const app = express();
+// Initialize the application using the Hexagonal Architecture
+const { app, container } = createApp();
 let server: Server;
-
-// Basic Middlewares
-app.use(cors());
-app.use(helmet());
-app.use(express.json());
-app.use(morgan('combined'));
-
-// Rate limit configuration to prevent DoS attacks
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit of 100 requests per time window per IP
-});
-app.use(limiter);
-
-// Swagger configuration
-setupSwagger(app);
-
-// Configure routes
-setupRoutes(app);
-
-// Error handling middleware (must be after routes)
-app.use(errorHandler);
 
 
 
@@ -67,9 +35,13 @@ process.on('SIGTERM', () => {
   logger.info('SIGTERM received. Closing server...');
   server.close(() => {
     logger.info('HTTP server closed.');
-    disconnectDatabase().then(() => {
-      logger.info('Database connection closed.');
-      process.exit(0);
+    // Close the container resources (Prisma client)
+    container.close().then(() => {
+      logger.info('Container resources closed.');
+      disconnectDatabase().then(() => {
+        logger.info('Database connection closed.');
+        process.exit(0);
+      });
     });
   });
 });

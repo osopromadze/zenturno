@@ -12,5 +12,7 @@ module.exports = {
   moduleNameMapper: {
     '^@infra/(.*)$': '<rootDir>/src/infra/$1',
     '^@utils/(.*)$': '<rootDir>/src/utils/$1',
+    '^@domain/(.*)$': '<rootDir>/src/domain/$1',
+    '^@config/(.*)$': '<rootDir>/src/config/$1',
   },
 };
