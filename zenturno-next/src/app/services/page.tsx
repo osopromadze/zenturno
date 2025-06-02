@@ -2,11 +2,12 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { getServices } from '@/app/actions/service';
 import { UserRole } from '@/domain/user/UserRole';
+import { getOrCreateUserProfile } from '@/lib/server-utils';
 import Link from 'next/link';
 
 export default async function ServicesPage() {
   // Create Supabase client
-  const supabase = createClient();
+  const supabase = await createClient();
   
   // Check if user is logged in
   const { data: { session } } = await supabase.auth.getSession();
@@ -16,19 +17,21 @@ export default async function ServicesPage() {
     redirect('/login?redirect=/services');
   }
   
-  // Get user profile from database
-  const { data: profile, error } = await supabase
-    .from('users')
-    .select('*')
-    .eq('email', session.user.email)
-    .single();
-  
-  if (error) {
-    console.error('Error fetching user profile:', error);
+  // Get or create user profile with robust error handling
+  const { userProfile, role } = await getOrCreateUserProfile(session);
+
+  if (!userProfile) {
+    return (
+      <div className="min-h-screen p-6">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl font-bold mb-8">Services</h1>
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            Error loading profile. Please try again later.
+          </div>
+        </div>
+      </div>
+    );
   }
-  
-  // Get user role from profile or session metadata
-  const role = profile?.role || session.user.user_metadata?.role || UserRole.CLIENT;
   
   // Only admins can access this page
   if (role !== UserRole.ADMIN) {

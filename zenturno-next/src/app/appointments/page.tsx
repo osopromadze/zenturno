@@ -5,14 +5,19 @@ import { UserRole } from '@/domain/user/UserRole';
 import { Professional } from '@/domain/professional/Professional';
 import { Client } from '@/domain/client/Client';
 import { Service } from '@/domain/service/Service';
+import { getOrCreateUserProfile } from '@/lib/server-utils';
+import Link from 'next/link';
 
-export default async function AppointmentsPage({
-  searchParams
-}: {
-  searchParams: { status?: string }
-}) {
+interface PageProps {
+  searchParams: Promise<{ status?: string }>
+}
+
+export default async function AppointmentsPage({ searchParams }: PageProps) {
+  // Await searchParams for Next.js 15 compatibility
+  const { status } = await searchParams;
+  
   // Create Supabase client
-  const supabase = createClient();
+  const supabase = await createClient();
   
   // Check if user is logged in
   const { data: { session } } = await supabase.auth.getSession();
@@ -22,15 +27,10 @@ export default async function AppointmentsPage({
     redirect('/login?redirect=/appointments');
   }
   
-  // Get user profile from database
-  const { data: profile, error: profileError } = await supabase
-    .from('users')
-    .select('*')
-    .eq('email', session.user.email)
-    .single();
-  
-  if (profileError) {
-    console.error('Error fetching user profile:', profileError);
+  // Get or create user profile with robust error handling
+  const { userProfile, role } = await getOrCreateUserProfile(session);
+
+  if (!userProfile) {
     return (
       <div className="min-h-screen p-6">
         <div className="max-w-6xl mx-auto">
@@ -43,11 +43,8 @@ export default async function AppointmentsPage({
     );
   }
   
-  // Get user role
-  const role = profile?.role || UserRole.CLIENT;
-  
   // Filter by status if provided
-  const statusFilter = searchParams.status || 'all';
+  const statusFilter = status || 'all';
   
   // Variables to store appointments and related data
   let appointments = [];
@@ -59,18 +56,50 @@ export default async function AppointmentsPage({
     const { data: clientData } = await supabase
       .from('clients')
       .select('id')
-      .eq('user_id', profile.id)
+      .eq('user_id', userProfile.id)
       .single();
     
     clientId = clientData?.id;
+    
+    // If client doesn't exist, create one
+    if (!clientData) {
+      const { data: newClient, error: createClientError } = await supabase
+        .from('clients')
+        .insert({
+          name: userProfile.name,
+          user_id: userProfile.id
+        })
+        .select('id')
+        .single();
+      
+      if (!createClientError) {
+        clientId = newClient.id;
+      }
+    }
   } else if (role === UserRole.PROFESSIONAL) {
     const { data: professionalData } = await supabase
       .from('professionals')
       .select('id')
-      .eq('user_id', profile.id)
+      .eq('user_id', userProfile.id)
       .single();
     
     professionalId = professionalData?.id;
+    
+    // If professional doesn't exist, create one
+    if (!professionalData) {
+      const { data: newProfessional, error: createProfessionalError } = await supabase
+        .from('professionals')
+        .insert({
+          name: userProfile.name,
+          user_id: userProfile.id
+        })
+        .select('id')
+        .single();
+      
+      if (!createProfessionalError) {
+        professionalId = newProfessional.id;
+      }
+    }
   }
   
   // Fetch appointments based on role
@@ -83,7 +112,7 @@ export default async function AppointmentsPage({
         services:service_id(*)
       `)
       .eq('client_id', clientId)
-      .order('date_time', { ascending: true });
+      .order('date', { ascending: true });
     
     // Apply status filter if not 'all'
     if (statusFilter !== 'all') {
@@ -106,7 +135,7 @@ export default async function AppointmentsPage({
         services:service_id(*)
       `)
       .eq('professional_id', professionalId)
-      .order('date_time', { ascending: true });
+      .order('date', { ascending: true });
     
     // Apply status filter if not 'all'
     if (statusFilter !== 'all') {
@@ -130,7 +159,7 @@ export default async function AppointmentsPage({
         professionals:professional_id(*),
         services:service_id(*)
       `)
-      .order('date_time', { ascending: true });
+      .order('date', { ascending: true });
     
     // Apply status filter if not 'all'
     if (statusFilter !== 'all') {
@@ -153,19 +182,16 @@ export default async function AppointmentsPage({
     // Add related entities if available
     if (appointmentData.professionals) {
       const professional = Professional.fromDatabaseRow(appointmentData.professionals);
-      // @ts-ignore - TypeScript doesn't know about our custom methods
       appointment.setProfessionalEntity(professional);
     }
     
     if (appointmentData.clients) {
       const client = Client.fromDatabaseRow(appointmentData.clients);
-      // @ts-ignore - TypeScript doesn't know about our custom methods
       appointment.setClientEntity(client);
     }
     
     if (appointmentData.services) {
       const service = Service.fromDatabaseRow(appointmentData.services);
-      // @ts-ignore - TypeScript doesn't know about our custom methods
       appointment.setServiceEntity(service);
     }
     
@@ -178,19 +204,19 @@ export default async function AppointmentsPage({
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Appointments</h1>
           <div className="flex space-x-4">
-            <a 
+            <Link 
               href="/dashboard" 
               className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
             >
               Dashboard
-            </a>
+            </Link>
             {role === UserRole.CLIENT && (
-              <a 
+              <Link 
                 href="/appointments/book" 
                 className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
               >
                 Book New Appointment
-              </a>
+              </Link>
             )}
           </div>
         </div>
@@ -198,36 +224,36 @@ export default async function AppointmentsPage({
         {/* Status filter */}
         <div className="mb-6">
           <div className="flex flex-wrap gap-2">
-            <a 
+            <Link 
               href="/appointments"
               className={`px-4 py-2 rounded-md ${statusFilter === 'all' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
             >
               All
-            </a>
-            <a 
+            </Link>
+            <Link 
               href="/appointments?status=pending"
               className={`px-4 py-2 rounded-md ${statusFilter === 'pending' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
             >
               Pending
-            </a>
-            <a 
+            </Link>
+            <Link 
               href="/appointments?status=confirmed"
               className={`px-4 py-2 rounded-md ${statusFilter === 'confirmed' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
             >
               Confirmed
-            </a>
-            <a 
+            </Link>
+            <Link 
               href="/appointments?status=cancelled"
               className={`px-4 py-2 rounded-md ${statusFilter === 'cancelled' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
             >
               Cancelled
-            </a>
-            <a 
+            </Link>
+            <Link 
               href="/appointments?status=completed"
               className={`px-4 py-2 rounded-md ${statusFilter === 'completed' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
             >
               Completed
-            </a>
+            </Link>
           </div>
         </div>
         
@@ -237,9 +263,9 @@ export default async function AppointmentsPage({
             <p className="text-gray-600 text-center py-8">
               No appointments found. 
               {role === UserRole.CLIENT && (
-                <a href="/appointments/book" className="text-primary-600 ml-1 hover:underline">
+                <Link href="/appointments/book" className="text-primary-600 ml-1 hover:underline">
                   Book an appointment
-                </a>
+                </Link>
               )}
             </p>
           </div>
@@ -309,12 +335,12 @@ export default async function AppointmentsPage({
                       {/* Show different actions based on role and appointment status */}
                       {appointment.getStatus() === 'pending' && (
                         <>
-                          <a 
+                          <Link 
                             href={`/appointments/${appointment.getId()}/reschedule`}
                             className="px-3 py-1 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm"
                           >
                             Reschedule
-                          </a>
+                          </Link>
                           
                           {role === UserRole.PROFESSIONAL && (
                             <form action={`/api/appointments/${appointment.getId()}/confirm`} method="POST">
@@ -341,12 +367,12 @@ export default async function AppointmentsPage({
                       {appointment.getStatus() === 'confirmed' && (
                         <>
                           {appointment.canReschedule() && (
-                            <a 
+                            <Link 
                               href={`/appointments/${appointment.getId()}/reschedule`}
                               className="px-3 py-1 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm"
                             >
                               Reschedule
-                            </a>
+                            </Link>
                           )}
                           
                           {role === UserRole.PROFESSIONAL && (
@@ -371,12 +397,12 @@ export default async function AppointmentsPage({
                         </>
                       )}
                       
-                      <a 
+                      <Link 
                         href={`/appointments/${appointment.getId()}`}
                         className="px-3 py-1 bg-primary-600 text-white rounded-md hover:bg-primary-700 text-sm"
                       >
                         View Details
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </div>

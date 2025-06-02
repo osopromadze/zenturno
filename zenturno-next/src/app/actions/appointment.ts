@@ -10,7 +10,7 @@ import { UserRole } from '@/domain/user/UserRole';
  */
 export async function createAppointment(formData: FormData) {
   // Create Supabase client
-  const supabase = createClient();
+  const supabase = await createClient();
   
   // Check if user is logged in
   const { data: { session } } = await supabase.auth.getSession();
@@ -22,8 +22,8 @@ export async function createAppointment(formData: FormData) {
   try {
     // Get form data
     const dateTimeStr = formData.get('dateTime') as string;
-    const professionalId = parseInt(formData.get('professionalId') as string, 10);
-    const serviceId = parseInt(formData.get('serviceId') as string, 10);
+    const professionalId = formData.get('professionalId') as string;
+    const serviceId = formData.get('serviceId') as string;
     
     // Validate required fields
     if (!dateTimeStr || !professionalId || !serviceId) {
@@ -74,6 +74,8 @@ export async function createAppointment(formData: FormData) {
       .eq('user_id', profile.id)
       .single();
     
+    let clientId;
+    
     if (clientError) {
       // If client record doesn't exist, create one
       if (clientError.code === 'PGRST116') { // PGRST116 is "no rows returned"
@@ -91,66 +93,41 @@ export async function createAppointment(formData: FormData) {
           return { error: 'Failed to create client record' };
         }
         
-        // Use the newly created client ID
-        const clientId = newClient.id;
-        
-        // Create appointment
-        const appointment = Appointment.create({
-          dateTime,
-          clientId,
-          professionalId,
-          serviceId,
-          status: 'pending'
-        });
-        
-        // Insert appointment into database
-        const { error: insertError } = await supabase
-          .from('appointments')
-          .insert(appointment.toDatabaseInsertDto());
-        
-        if (insertError) {
-          console.error('Error creating appointment:', insertError);
-          return { error: 'Failed to create appointment' };
-        }
-        
-        // Redirect to appointments page
-        redirect('/appointments?status=pending');
+        clientId = newClient.id;
       } else {
         console.error('Error fetching client record:', clientError);
         return { error: 'Failed to fetch client record' };
       }
     } else {
-      // Use existing client ID
-      const clientId = clientData.id;
-      
-      // Create appointment
-      const appointment = Appointment.create({
-        dateTime,
-        clientId,
-        professionalId,
-        serviceId,
-        status: 'pending'
-      });
-      
-      // Insert appointment into database
-      const { error: insertError } = await supabase
-        .from('appointments')
-        .insert(appointment.toDatabaseInsertDto());
-      
-      if (insertError) {
-        console.error('Error creating appointment:', insertError);
-        return { error: 'Failed to create appointment' };
-      }
-      
-      // Redirect to appointments page
-      redirect('/appointments?status=pending');
+      clientId = clientData.id;
     }
+    
+    // Insert appointment directly into database with correct field names
+    const { data: appointmentData, error: insertError } = await supabase
+      .from('appointments')
+      .insert({
+        client_id: clientId,
+        professional_id: professionalId,
+        service_id: serviceId,
+        date: dateTime.toISOString(),
+        status: 'pending',
+        notes: ''
+      })
+      .select()
+      .single();
+    
+    if (insertError) {
+      console.error('Error creating appointment:', insertError);
+      return { error: 'Failed to create appointment: ' + insertError.message };
+    }
+    
   } catch (error) {
     console.error('Error creating appointment:', error);
     return { error: 'An unexpected error occurred' };
   }
   
-  return { success: true };
+  // Redirect to appointments page (outside try/catch to avoid catching NEXT_REDIRECT)
+  redirect('/appointments?status=pending');
 }
 
 /**
@@ -161,7 +138,7 @@ export async function updateAppointmentStatus(
   status: AppointmentStatus
 ) {
   // Create Supabase client
-  const supabase = createClient();
+  const supabase = await createClient();
   
   // Check if user is logged in
   const { data: { session } } = await supabase.auth.getSession();
@@ -317,7 +294,7 @@ export async function rescheduleAppointment(
   formData: FormData
 ) {
   // Create Supabase client
-  const supabase = createClient();
+  const supabase = await createClient();
   
   // Check if user is logged in
   const { data: { session } } = await supabase.auth.getSession();
@@ -437,7 +414,7 @@ export async function rescheduleAppointment(
     const { error: updateError } = await supabase
       .from('appointments')
       .update({
-        date_time: dateTime.toISOString(),
+        date: dateTime.toISOString(),
         updated_at: new Date().toISOString()
       })
       .eq('id', appointmentId);

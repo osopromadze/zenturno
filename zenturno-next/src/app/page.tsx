@@ -1,8 +1,6 @@
 "use client";
 
-import Image from "next/image";
 import Link from 'next/link';
-import { WarpBackground } from '@/components/magicui/warp-background';
 import { AuroraText } from '@/components/magicui/aurora-text';
 import { RippleButton } from '@/components/magicui/ripple-button';
 import { ScrollProgress } from '@/components/magicui/scroll-progress';
@@ -11,7 +9,6 @@ import { MagicCard } from '@/components/magicui/magic-card';
 import { Marquee } from '@/components/magicui/marquee';
 import { BorderBeam } from '@/components/magicui/border-beam';
 import { Particles } from '@/components/magicui/particles';
-import { cn } from '@/lib/utils';
 import { useState } from "react";
 
 export default function Home() {
@@ -135,22 +132,23 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-blue-950 via-blue-900 to-indigo-900 z-0"></div>
         <Particles
           className="absolute inset-0 z-10"
-          particleColor="rgba(255, 255, 255, 0.3)"
+          color="rgba(255, 255, 255, 0.3)"
           quantity={100}
           staticity={30}
         />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
           <div className="text-center max-w-3xl mx-auto">
-            <BorderBeam
-              className="inline-block mb-6 rounded-full px-4 py-1.5 text-sm font-medium"
-              duration={20}
-              size={500}
-              delay={0.1}
-              colorFrom="rgb(125, 211, 252)"
-              colorTo="rgb(125, 211, 252)"
-            >
+            <div className="relative inline-block mb-6 rounded-full px-4 py-1.5 text-sm font-medium bg-blue-900/20 border border-blue-700">
+              <BorderBeam
+                className="absolute inset-0"
+                duration={20}
+                size={500}
+                delay={0.1}
+                colorFrom="rgb(125, 211, 252)"
+                colorTo="rgb(125, 211, 252)"
+              />
               <span className="relative z-10 text-blue-100">✨ Appointment booking made simple</span>
-            </BorderBeam>
+            </div>
             <AuroraText
               className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight"
               colors={["#FFFFFF", "#A5F3FC", "#BAE6FD"]}
@@ -225,11 +223,11 @@ export default function Home() {
               "ZenTurno has completely transformed how I manage my salon appointments! - Sarah K.",
               "No more double bookings or scheduling headaches. Highly recommended! - Michael T.",
               "My clients love how easy it is to book appointments online. - Jessica R.",
-              "The best scheduling platform I've used in my 10 years as a professional. - David M.",
+              "The best scheduling platform I&apos;ve used in my 10 years as a professional. - David M.",
               "Simple, intuitive, and reliable. Just what my business needed. - Laura B.",
             ].map((testimonial, i) => (
               <div key={i} className="mx-4 px-8 py-4 bg-white rounded-lg shadow-md min-w-[300px]">
-                <p className="text-gray-700">"{testimonial}"</p>
+                <p className="text-gray-700">&quot;{testimonial}&quot;</p>
               </div>
             ))}
           </Marquee>

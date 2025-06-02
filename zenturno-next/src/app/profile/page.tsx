@@ -1,10 +1,12 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import LogoutButton from '@/components/auth/LogoutButton';
+import { UserRole } from '@/domain/user/UserRole';
+import { getOrCreateUserProfile } from '@/lib/server-utils';
 
 export default async function ProfilePage() {
   // Create Supabase client
-  const supabase = createClient();
+  const supabase = await createClient();
   
   // Check if user is logged in
   const { data: { session } } = await supabase.auth.getSession();
@@ -14,19 +16,21 @@ export default async function ProfilePage() {
     redirect('/login?redirect=/profile');
   }
   
-  // Get user profile from database
-  const { data: profile, error } = await supabase
-    .from('users')
-    .select('*')
-    .eq('email', session.user.email)
-    .single();
-  
-  if (error) {
-    console.error('Error fetching user profile:', error);
+  // Get or create user profile with robust error handling
+  const { userProfile, role } = await getOrCreateUserProfile(session);
+
+  if (!userProfile) {
+    return (
+      <div className="min-h-screen p-6">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl font-bold mb-8">Profile</h1>
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            Error loading profile. Please try again later.
+          </div>
+        </div>
+      </div>
+    );
   }
-  
-  // Get user role from profile or session metadata
-  const role = profile?.role || session.user.user_metadata?.role || 'client';
   
   return (
     <div className="min-h-screen p-6">
@@ -51,7 +55,7 @@ export default async function ProfilePage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
               <div className="p-3 bg-gray-100 rounded-md">
-                {profile?.name || session.user.user_metadata?.name || 'Not set'}
+                {userProfile?.name || session.user.user_metadata?.name || 'Not set'}
               </div>
             </div>
             
@@ -72,8 +76,8 @@ export default async function ProfilePage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Member Since</label>
               <div className="p-3 bg-gray-100 rounded-md">
-                {profile?.created_at 
-                  ? new Date(profile.created_at).toLocaleDateString() 
+                {userProfile?.created_at 
+                  ? new Date(userProfile.created_at).toLocaleDateString() 
                   : new Date(session.user.created_at).toLocaleDateString()}
               </div>
             </div>

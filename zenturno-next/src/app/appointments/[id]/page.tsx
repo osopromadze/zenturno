@@ -6,36 +6,27 @@ import { Client } from '@/domain/client/Client';
 import { Service } from '@/domain/service/Service';
 import { UserRole } from '@/domain/user/UserRole';
 
-export default async function AppointmentDetailsPage({
-  params
-}: {
-  params: { id: string }
-}) {
+interface PageProps {
+  params: Promise<{ id: string }>
+}
+
+export default async function AppointmentDetailPage({ params }: PageProps) {
+  const { id } = await params;
+  const appointmentId = parseInt(id, 10);
+  
+  if (isNaN(appointmentId)) {
+    redirect('/appointments');
+  }
+  
   // Create Supabase client
-  const supabase = createClient();
+  const supabase = await createClient();
   
   // Check if user is logged in
   const { data: { session } } = await supabase.auth.getSession();
   
   // If user is not logged in, redirect to login
   if (!session) {
-    redirect(`/login?redirect=/appointments/${params.id}`);
-  }
-  
-  // Parse appointment ID
-  const appointmentId = parseInt(params.id, 10);
-  
-  if (isNaN(appointmentId)) {
-    return (
-      <div className="min-h-screen p-6">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold mb-8">Appointment Details</h1>
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-            Invalid appointment ID.
-          </div>
-        </div>
-      </div>
-    );
+    redirect(`/login?redirect=/appointments/${id}`);
   }
   
   // Get user profile from database

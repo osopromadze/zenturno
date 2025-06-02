@@ -5,7 +5,7 @@ import MagicAuthLayout from '@/components/auth/MagicAuthLayout'
 
 export default async function SignupPage() {
   // Create Supabase client
-  const supabase = createClient()
+  const supabase = await createClient()
   
   // Check if user is already logged in
   const { data: { session } } = await supabase.auth.getSession()

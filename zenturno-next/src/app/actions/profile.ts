@@ -3,8 +3,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { User } from '@/domain/user/User';
-import { Client } from '@/domain/client/Client';
-import { Professional } from '@/domain/professional/Professional';
 import { UserRole } from '@/domain/user/UserRole';
 
 /**
@@ -12,7 +10,7 @@ import { UserRole } from '@/domain/user/UserRole';
  */
 export async function updateProfile(formData: FormData) {
   // Create Supabase client
-  const supabase = createClient();
+  const supabase = await createClient();
   
   // Check if user is logged in
   const { data: { session } } = await supabase.auth.getSession();
@@ -44,16 +42,16 @@ export async function updateProfile(formData: FormData) {
       return { error: 'Failed to fetch user data' };
     }
     
-    // Create user entity
+    // Create user entity for business logic
     const user = User.fromDatabaseRow(userData);
     
-    // Update user name
-    user.setName(name);
-    
-    // Update user in database
+    // Update user name directly in database (since User class is immutable)
     const { error: updateError } = await supabase
       .from('users')
-      .update(user.toDatabaseUpdateDto())
+      .update({ 
+        name: name.trim(),
+        updated_at: new Date().toISOString()
+      })
       .eq('id', user.getId());
     
     if (updateError) {
@@ -78,14 +76,15 @@ export async function updateProfile(formData: FormData) {
       }
       
       if (clientData) {
-        // Update existing client
-        const client = Client.fromDatabaseRow(clientData);
-        client.setPhone(phone);
-        
+        // Update existing client directly
         const { error: updateClientError } = await supabase
           .from('clients')
-          .update(client.toDatabaseUpdateDto())
-          .eq('id', client.getId());
+          .update({
+            name: name.trim(),
+            phone: phone.trim(),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', clientData.id);
         
         if (updateClientError) {
           console.error('Error updating client:', updateClientError);
@@ -93,15 +92,13 @@ export async function updateProfile(formData: FormData) {
         }
       } else {
         // Create new client
-        const client = Client.create({
-          name: user.getName(),
-          phone,
-          userId: user.getId()
-        });
-        
         const { error: insertClientError } = await supabase
           .from('clients')
-          .insert(client.toDatabaseInsertDto());
+          .insert({
+            name: name.trim(),
+            phone: phone.trim(),
+            user_id: user.getId()
+          });
         
         if (insertClientError) {
           console.error('Error creating client:', insertClientError);
@@ -122,14 +119,15 @@ export async function updateProfile(formData: FormData) {
       }
       
       if (professionalData) {
-        // Update existing professional
-        const professional = Professional.fromDatabaseRow(professionalData);
-        professional.setSpecialty(specialty);
-        
+        // Update existing professional directly
         const { error: updateProfessionalError } = await supabase
           .from('professionals')
-          .update(professional.toDatabaseUpdateDto())
-          .eq('id', professional.getId());
+          .update({
+            name: name.trim(),
+            specialty: specialty.trim(),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', professionalData.id);
         
         if (updateProfessionalError) {
           console.error('Error updating professional:', updateProfessionalError);
@@ -137,15 +135,13 @@ export async function updateProfile(formData: FormData) {
         }
       } else {
         // Create new professional
-        const professional = Professional.create({
-          name: user.getName(),
-          specialty,
-          userId: user.getId()
-        });
-        
         const { error: insertProfessionalError } = await supabase
           .from('professionals')
-          .insert(professional.toDatabaseInsertDto());
+          .insert({
+            name: name.trim(),
+            specialty: specialty.trim(),
+            user_id: user.getId()
+          });
         
         if (insertProfessionalError) {
           console.error('Error creating professional:', insertProfessionalError);

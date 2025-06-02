@@ -3,23 +3,25 @@ import { createClient } from '@/lib/supabase/server';
 import { getServiceById } from '@/app/actions/service';
 import { UserRole } from '@/domain/user/UserRole';
 import Link from 'next/link';
+import { Service } from '@/domain/service/Service';
+import { Professional } from '@/domain/professional/Professional';
 
-export default async function ServiceDetailsPage({
-  params
-}: {
-  params: { id: string }
-}) {
-  const serviceId = params.id;
+interface PageProps {
+  params: Promise<{ id: string }>
+}
+
+export default async function ServiceDetailPage({ params }: PageProps) {
+  const { id } = await params;
   
   // Create Supabase client
-  const supabase = createClient();
+  const supabase = await createClient();
   
   // Check if user is logged in
   const { data: { session } } = await supabase.auth.getSession();
   
   // If user is not logged in, redirect to login
   if (!session) {
-    redirect(`/login?redirect=/services/${serviceId}`);
+    redirect(`/login?redirect=/services/${id}`);
   }
   
   // Get user profile from database
@@ -42,7 +44,7 @@ export default async function ServiceDetailsPage({
   }
   
   // Get service by ID
-  const service = await getServiceById(serviceId);
+  const service = await getServiceById(id);
   
   // If service not found, redirect to services page
   if (!service) {
@@ -79,7 +81,7 @@ export default async function ServiceDetailsPage({
               Back to Services
             </Link>
             <Link
-              href={`/services/${serviceId}/edit`}
+              href={`/services/${id}/edit`}
               className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
             >
               Edit Service
@@ -123,13 +125,13 @@ export default async function ServiceDetailsPage({
           <h3 className="text-xl font-semibold mb-4">Actions</h3>
           <div className="flex space-x-4">
             <Link
-              href={`/services/${serviceId}/edit`}
+              href={`/services/${id}/edit`}
               className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
             >
               Edit Service
             </Link>
             <Link
-              href={`/api/services/${serviceId}/delete`}
+              href={`/api/services/${id}/delete`}
               className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
             >
               Delete Service

@@ -3,10 +3,11 @@ import { completeAppointment } from '@/app/actions/appointment';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const appointmentId = parseInt(params.id, 10);
+    const { id } = await params;
+    const appointmentId = parseInt(id, 10);
     
     if (isNaN(appointmentId)) {
       return NextResponse.json(

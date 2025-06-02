@@ -1,25 +1,26 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { getServiceById } from '@/app/actions/service';
+import { updateService, deleteService, getServiceById } from '@/app/actions/service';
 import { UserRole } from '@/domain/user/UserRole';
 import Link from 'next/link';
+import { Service } from '@/domain/service/Service';
 
-export default async function EditServicePage({
-  params
-}: {
-  params: { id: string }
-}) {
-  const serviceId = params.id;
+interface PageProps {
+  params: Promise<{ id: string }>
+}
+
+export default async function EditServicePage({ params }: PageProps) {
+  const { id } = await params;
   
   // Create Supabase client
-  const supabase = createClient();
+  const supabase = await createClient();
   
   // Check if user is logged in
   const { data: { session } } = await supabase.auth.getSession();
   
   // If user is not logged in, redirect to login
   if (!session) {
-    redirect(`/login?redirect=/services/${serviceId}/edit`);
+    redirect(`/login?redirect=/services/${id}/edit`);
   }
   
   // Get user profile from database
@@ -42,7 +43,7 @@ export default async function EditServicePage({
   }
   
   // Get service by ID
-  const service = await getServiceById(serviceId);
+  const service = await getServiceById(id);
   
   // If service not found, redirect to services page
   if (!service) {
@@ -56,7 +57,7 @@ export default async function EditServicePage({
           <h1 className="text-3xl font-bold">Edit Service</h1>
           <div className="flex space-x-4">
             <Link
-              href={`/services/${serviceId}`}
+              href={`/services/${id}`}
               className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
             >
               Cancel
@@ -65,7 +66,7 @@ export default async function EditServicePage({
         </div>
         
         <div className="bg-white shadow rounded-lg p-6 mb-8">
-          <form action={`/api/services/${serviceId}/update`} method="POST" className="space-y-6">
+          <form action={`/api/services/${id}/update`} method="POST" className="space-y-6">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                 Service Name

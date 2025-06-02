@@ -3,21 +3,44 @@ import { rescheduleAppointment } from '@/app/actions/appointment';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const appointmentId = params.id;
-    const formData = await request.formData();
+    const { id } = await params;
+    const appointmentId = parseInt(id, 10);
+    
+    if (isNaN(appointmentId)) {
+      return NextResponse.json(
+        { error: 'Invalid appointment ID' },
+        { status: 400 }
+      );
+    }
+
+    const body = await request.json();
+    const { newDate, newTime } = body;
+    
+    if (!newDate || !newTime) {
+      return NextResponse.json(
+        { error: 'New date and time are required' },
+        { status: 400 }
+      );
+    }
+
+    // Create FormData to match the function signature
+    const formData = new FormData();
+    const dateTime = new Date(`${newDate}T${newTime}`);
+    formData.append('dateTime', dateTime.toISOString());
+    
     const result = await rescheduleAppointment(appointmentId, formData);
     
     if (result?.error) {
       return NextResponse.json(
-        { error: result.error, fields: result.fields },
+        { error: result.error },
         { status: 400 }
       );
     }
     
-    return NextResponse.redirect(new URL(`/appointments/${appointmentId}`, request.url));
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error rescheduling appointment:', error);
     return NextResponse.json(

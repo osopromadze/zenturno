@@ -147,6 +147,13 @@ export default function BookingForm() {
     // Combine date and time strings into a Date object
     const dateTime = new Date(`${dateStr}T${timeStr}`);
     
+    if (isNaN(dateTime.getTime())) {
+      setError('Invalid date or time selected');
+      return;
+    }
+    
+    setError(null);
+    
     setBookingData({
       ...bookingData,
       dateTime
@@ -160,7 +167,7 @@ export default function BookingForm() {
     event.preventDefault();
     
     if (!bookingData.serviceId || !bookingData.professionalId || !bookingData.dateTime) {
-      setError('Missing required booking information');
+      setError('Missing required booking information. Please go back and complete all steps.');
       return;
     }
     
@@ -181,7 +188,12 @@ export default function BookingForm() {
       
       // Redirect happens in the server action
     } catch (error: any) {
-      console.error('Error creating appointment:', error);
+      // Don't show NEXT_REDIRECT errors as they are normal behavior in Next.js 15
+      if (error?.message?.includes('NEXT_REDIRECT') || error?.digest?.includes('NEXT_REDIRECT')) {
+        // This is a successful redirect, don't show as error
+        return;
+      }
+      
       setError(error.message || 'Failed to create appointment. Please try again.');
       setLoading(false);
     }
@@ -387,6 +399,7 @@ export default function BookingForm() {
                   id="date"
                   name="date"
                   min={new Date().toISOString().split('T')[0]}
+                  defaultValue={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
                   className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                   required
                 />
@@ -399,6 +412,7 @@ export default function BookingForm() {
                 <select
                   id="time"
                   name="time"
+                  defaultValue="10:00"
                   className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                   required
                 >
@@ -412,7 +426,7 @@ export default function BookingForm() {
               </div>
               
               {error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                   {error}
                 </div>
               )}
@@ -420,7 +434,7 @@ export default function BookingForm() {
               <div>
                 <button
                   type="submit"
-                  className="w-full py-3 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                 >
                   Continue to Confirmation
                 </button>
@@ -437,7 +451,7 @@ export default function BookingForm() {
               <button
                 type="button"
                 onClick={() => setCurrentStep('datetime')}
-                className="text-primary-600 hover:text-primary-800"
+                className="text-blue-600 hover:text-blue-800"
               >
                 ← Back to Date & Time
               </button>
@@ -448,11 +462,11 @@ export default function BookingForm() {
               <div className="space-y-4">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Service:</span>
-                  <span className="font-medium">{bookingData.serviceName}</span>
+                  <span className="font-medium">{bookingData.serviceName || 'Not selected'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Professional:</span>
-                  <span className="font-medium">{bookingData.professionalName}</span>
+                  <span className="font-medium">{bookingData.professionalName || 'Not selected'}</span>
                 </div>
                 {bookingData.professionalSpecialty && (
                   <div className="flex justify-between">
@@ -474,30 +488,28 @@ export default function BookingForm() {
                 </div>
               </div>
             </div>
-            
-            <form onSubmit={handleSubmit}>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
                 <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
                   {error}
                 </div>
               )}
               
-              <div className="mt-6">
-                <button
-                  type="submit"
-                  className="w-full py-3 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-400"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <span className="flex items-center justify-center">
-                      <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"></span>
-                      Processing...
-                    </span>
-                  ) : (
-                    'Confirm Booking'
-                  )}
-                </button>
-              </div>
+              <button
+                type="submit"
+                className="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-400 transition-colors"
+                disabled={loading}
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center">
+                    <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white mr-2"></span>
+                    Processing...
+                  </span>
+                ) : (
+                  'Confirm Booking'
+                )}
+              </button>
             </form>
           </div>
         );
@@ -509,26 +521,26 @@ export default function BookingForm() {
       {/* Progress indicator */}
       <div className="mb-8">
         <div className="flex justify-between">
-          <div className={`text-center flex-1 ${currentStep === 'service' ? 'text-primary-600 font-medium' : ''}`}>
-            <div className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center mb-2 ${currentStep === 'service' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-600'}`}>
+          <div className={`text-center flex-1 ${currentStep === 'service' ? 'text-blue-600 font-medium' : ''}`}>
+            <div className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center mb-2 ${currentStep === 'service' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}>
               1
             </div>
             <span>Service</span>
           </div>
-          <div className={`text-center flex-1 ${currentStep === 'professional' ? 'text-primary-600 font-medium' : ''}`}>
-            <div className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center mb-2 ${currentStep === 'professional' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-600'}`}>
+          <div className={`text-center flex-1 ${currentStep === 'professional' ? 'text-blue-600 font-medium' : ''}`}>
+            <div className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center mb-2 ${currentStep === 'professional' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}>
               2
             </div>
             <span>Professional</span>
           </div>
-          <div className={`text-center flex-1 ${currentStep === 'datetime' ? 'text-primary-600 font-medium' : ''}`}>
-            <div className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center mb-2 ${currentStep === 'datetime' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-600'}`}>
+          <div className={`text-center flex-1 ${currentStep === 'datetime' ? 'text-blue-600 font-medium' : ''}`}>
+            <div className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center mb-2 ${currentStep === 'datetime' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}>
               3
             </div>
             <span>Date & Time</span>
           </div>
-          <div className={`text-center flex-1 ${currentStep === 'confirmation' ? 'text-primary-600 font-medium' : ''}`}>
-            <div className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center mb-2 ${currentStep === 'confirmation' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-600'}`}>
+          <div className={`text-center flex-1 ${currentStep === 'confirmation' ? 'text-blue-600 font-medium' : ''}`}>
+            <div className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center mb-2 ${currentStep === 'confirmation' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}>
               4
             </div>
             <span>Confirmation</span>
@@ -539,9 +551,9 @@ export default function BookingForm() {
             <div className="h-0.5 w-full bg-gray-200"></div>
           </div>
           <div className="relative flex justify-between">
-            <div className={`w-8 h-0.5 ${currentStep !== 'service' ? 'bg-primary-600' : 'bg-gray-200'}`}></div>
-            <div className={`w-8 h-0.5 ${currentStep === 'datetime' || currentStep === 'confirmation' ? 'bg-primary-600' : 'bg-gray-200'}`}></div>
-            <div className={`w-8 h-0.5 ${currentStep === 'confirmation' ? 'bg-primary-600' : 'bg-gray-200'}`}></div>
+            <div className={`w-8 h-0.5 ${currentStep !== 'service' ? 'bg-blue-600' : 'bg-gray-200'}`}></div>
+            <div className={`w-8 h-0.5 ${currentStep === 'datetime' || currentStep === 'confirmation' ? 'bg-blue-600' : 'bg-gray-200'}`}></div>
+            <div className={`w-8 h-0.5 ${currentStep === 'confirmation' ? 'bg-blue-600' : 'bg-gray-200'}`}></div>
           </div>
         </div>
       </div>

@@ -14,7 +14,7 @@ import { redirect } from "next/navigation";
 export async function createService(formData: FormData) {
   try {
     // Create Supabase client
-    const supabase = createClient();
+    const supabase = await createClient();
     
     // Check if user is logged in and is an admin
     const { data: { session } } = await supabase.auth.getSession();
@@ -76,7 +76,11 @@ export async function createService(formData: FormData) {
     
     if (insertError) {
       console.error('Error creating service:', insertError);
-      return { error: "Error creating service" };
+      return { error: 'Failed to create service' };
+    }
+
+    if (!insertedService) {
+      return { error: 'Failed to create service - no data returned' };
     }
     
     // Revalidate services page
@@ -99,7 +103,7 @@ export async function createService(formData: FormData) {
 export async function updateService(serviceId: string, formData: FormData) {
   try {
     // Create Supabase client
-    const supabase = createClient();
+    const supabase = await createClient();
     
     // Check if user is logged in and is an admin
     const { data: { session } } = await supabase.auth.getSession();
@@ -196,7 +200,7 @@ export async function updateService(serviceId: string, formData: FormData) {
 export async function deleteService(serviceId: string) {
   try {
     // Create Supabase client
-    const supabase = createClient();
+    const supabase = await createClient();
     
     // Check if user is logged in and is an admin
     const { data: { session } } = await supabase.auth.getSession();
@@ -269,7 +273,7 @@ export async function deleteService(serviceId: string) {
 export async function getServices() {
   try {
     // Create Supabase client
-    const supabase = createClient();
+    const supabase = await createClient();
     
     // Get services from database
     const { data: services, error } = await supabase
@@ -298,7 +302,7 @@ export async function getServices() {
 export async function getServiceById(serviceId: string) {
   try {
     // Create Supabase client
-    const supabase = createClient();
+    const supabase = await createClient();
     
     // Get service from database
     const { data: service, error } = await supabase

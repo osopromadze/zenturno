@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { deleteService } from '@/app/actions/service';
 
-export async function GET(
+export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const serviceId = params.id;
-    const result = await deleteService(serviceId);
+    const { id } = await params;
+    
+    const result = await deleteService(id);
     
     if (result?.error) {
       return NextResponse.json(
@@ -16,7 +17,7 @@ export async function GET(
       );
     }
     
-    return NextResponse.redirect(new URL('/services', request.url));
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting service:', error);
     return NextResponse.json(

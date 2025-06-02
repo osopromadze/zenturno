@@ -12,7 +12,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   
   // Create Supabase client
-  const supabase = createClient()
+  const supabase = await createClient()
   
   // Check if user is authenticated
   const { data: { session } } = await supabase.auth.getSession()

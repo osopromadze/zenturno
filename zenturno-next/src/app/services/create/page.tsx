@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export default async function CreateServicePage() {
   // Create Supabase client
-  const supabase = createClient();
+  const supabase = await createClient();
   
   // Check if user is logged in
   const { data: { session } } = await supabase.auth.getSession();

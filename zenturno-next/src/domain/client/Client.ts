@@ -85,14 +85,11 @@ export class Client {
    * @returns Client entity
    */
   public static fromUser(user: User, phone?: string): Client {
-    return new Client(
-      0, // ID will be assigned by the database
-      user.getName(),
-      phone ?? null,
-      user.getId(),
-      new Date(),
-      new Date()
-    );
+    return Client.create({
+      name: user.getName(),
+      phone: phone ?? null,
+      userId: user.getId() ?? null
+    });
   }
   
   /**

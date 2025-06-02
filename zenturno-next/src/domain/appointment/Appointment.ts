@@ -99,7 +99,7 @@ export class Appointment {
    */
   public static fromDatabaseRow(row: {
     id: number;
-    date_time: string;
+    date: string;
     client_id: number | null;
     professional_id: number | null;
     service_id: number | null;
@@ -109,7 +109,7 @@ export class Appointment {
   }): Appointment {
     return new Appointment(
       row.id,
-      new Date(row.date_time),
+      new Date(row.date),
       row.client_id,
       row.professional_id,
       row.service_id,

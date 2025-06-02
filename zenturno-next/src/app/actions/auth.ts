@@ -25,7 +25,7 @@ export async function registerUser(formData: FormData) {
     const userDTO = await user.toDTO()
     
     // Create Supabase client
-    const supabase = createClient()
+    const supabase = await createClient()
     
     // Create user in Supabase Auth
     const { error: authError } = await supabase.auth.signUp({
@@ -75,7 +75,7 @@ export async function registerUser(formData: FormData) {
  * Sign out the current user
  */
 export async function signOut() {
-  const supabase = createClient()
+  const supabase = await createClient()
   await supabase.auth.signOut()
   revalidatePath('/', 'layout')
   redirect('/login')

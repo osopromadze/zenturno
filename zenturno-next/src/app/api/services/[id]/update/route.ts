@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { updateService } from '@/app/actions/service';
 
-export async function POST(
+export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const serviceId = params.id;
-    const formData = await request.formData();
-    const result = await updateService(serviceId, formData);
+    const { id } = await params;
+    const body = await request.json();
+    
+    const result = await updateService(id, body);
     
     if (result?.error) {
       return NextResponse.json(
@@ -17,7 +18,7 @@ export async function POST(
       );
     }
     
-    return NextResponse.redirect(new URL(`/services/${serviceId}`, request.url));
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error updating service:', error);
     return NextResponse.json(

@@ -2,33 +2,40 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import LogoutButton from '@/components/auth/LogoutButton'
 import { UserRole } from '@/domain/user/UserRole'
+import { getOrCreateUserProfile } from '@/lib/server-utils'
 
-export default async function DashboardPage() {
-  // Create Supabase client
-  const supabase = createClient()
+interface PageProps {
+  searchParams: Promise<{ message?: string }>
+}
+
+export default async function Dashboard({ searchParams }: PageProps) {
+  // Await searchParams for Next.js 15 compatibility
+  const { message } = await searchParams;
   
-  // Check if user is logged in
+  const supabase = await createClient()
+
   const { data: { session } } = await supabase.auth.getSession()
-  
-  // If user is not logged in, redirect to login
+
   if (!session) {
     redirect('/login')
   }
-  
-  // Get user profile from database
-  const { data: profile, error } = await supabase
-    .from('users')
-    .select('*')
-    .eq('email', session.user.email)
-    .single()
-  
-  if (error) {
-    console.error('Error fetching user profile:', error)
+
+  // Get or create user profile with robust error handling
+  const { userProfile, role } = await getOrCreateUserProfile(session);
+
+  if (!userProfile) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-3xl font-bold text-gray-900 mb-8">Dashboard</h1>
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            Error loading profile. Please try again later.
+          </div>
+        </div>
+      </div>
+    );
   }
-  
-  // Get user role from profile or session metadata
-  const role = profile?.role || session.user.user_metadata?.role || UserRole.CLIENT
-  
+
   return (
     <div className="min-h-screen p-6">
       <div className="max-w-4xl mx-auto">
@@ -37,8 +44,15 @@ export default async function DashboardPage() {
           <LogoutButton />
         </div>
         
+        {/* Success message */}
+        {message && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+            {decodeURIComponent(message)}
+          </div>
+        )}
+        
         <div className="bg-white shadow rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Welcome, {profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : session.user.user_metadata?.name || 'User'}</h2>
+          <h2 className="text-xl font-semibold mb-4">Welcome, {userProfile ? `${userProfile.name || ''}`.trim() : session.user.user_metadata?.name || 'User'}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <p className="text-gray-600">Email:</p>

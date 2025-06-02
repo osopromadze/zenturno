@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 import { RippleButton } from '@/components/magicui/ripple-button'
 import { AuroraText } from '@/components/magicui/aurora-text'
 import { BorderBeam } from '@/components/magicui/border-beam'
+import { UserRole } from '@/domain/user/UserRole'
 
 export default function MagicSignupForm() {
   const [name, setName] = useState('')
@@ -57,7 +58,7 @@ export default function MagicSignupForm() {
     }
 
     try {
-      // 1. Sign up with Supabase Auth
+      // Sign up with Supabase Auth - the callback will handle creating database records
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
@@ -68,7 +69,7 @@ export default function MagicSignupForm() {
             phone: role === 'client' ? phone : null,
             specialty: role === 'professional' ? specialty : null,
           },
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?redirect_to=/dashboard`,
         },
       })
 
@@ -76,35 +77,12 @@ export default function MagicSignupForm() {
         throw authError
       }
 
-      // 2. Store additional user data in the appropriate table based on role
+      // If signup was successful, show success message
       if (authData.user) {
-        const userId = authData.user.id
-
-        if (role === 'client') {
-          const { error: clientError } = await supabase
-            .from('clientes')
-            .insert({
-              nombre: name,
-              telefono: phone,
-              usuario_id: userId
-            })
-
-          if (clientError) throw clientError
-        } else if (role === 'professional') {
-          const { error: profError } = await supabase
-            .from('profesionales')
-            .insert({
-              nombre: name,
-              especialidad: specialty,
-              usuario_id: userId
-            })
-
-          if (profError) throw profError
-        }
+        setSuccess(true)
       }
-
-      setSuccess(true)
     } catch (error: any) {
+      console.error('Signup error:', error)
       setError(error.message || 'Failed to sign up')
     } finally {
       setLoading(false)

@@ -140,11 +140,20 @@ export default function MagicLoginForm({ redirectTo = '/dashboard' }: LoginFormP
           {loading ? 'Signing in...' : 'Sign In'}
         </RippleButton>
         
-        <div className="text-center text-gray-400 text-sm">
-          Don't have an account?{' '}
-          <Link href="/signup" className="text-blue-400 hover:text-blue-300 transition-colors font-medium">
-            Create account
-          </Link>
+        <div className="text-center">
+          <p className="text-gray-400 text-sm mb-4">
+            Don&apos;t have an account?{' '}
+            <Link href="/signup" className="text-blue-400 hover:text-blue-300 transition-colors font-medium">
+              Sign up
+            </Link>
+          </p>
+          
+          <p className="text-gray-400 text-sm">
+            Having trouble with email confirmation?{' '}
+            <Link href="/signup" className="text-blue-400 hover:text-blue-300 transition-colors font-medium">
+              Resend confirmation email
+            </Link>
+          </p>
         </div>
       </form>
     </div>

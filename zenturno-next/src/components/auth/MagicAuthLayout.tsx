@@ -24,12 +24,10 @@ export default function MagicAuthLayout({
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden relative">
       {/* DotPattern covering the entire page */}
       <DotPattern 
-        className="absolute inset-0 z-0" 
+        className="absolute inset-0 z-0 text-blue-500/20" 
         width={20}
         height={20}
-        dotSize={1.5}
-        dotColor="rgba(59, 130, 246, 0.5)"
-        backgroundOpacity={0.2}
+        cr={1.5}
       />
       
       <header className="w-full py-8 flex items-center justify-center relative z-10">

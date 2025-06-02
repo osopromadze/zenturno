@@ -1,11 +1,12 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { UserRole } from '@/domain/user/UserRole';
+import { getOrCreateUserProfile } from '@/lib/server-utils';
 import BookingForm from '@/components/appointments/BookingForm';
 
 export default async function BookAppointmentPage() {
   // Create Supabase client
-  const supabase = createClient();
+  const supabase = await createClient();
   
   // Check if user is logged in
   const { data: { session } } = await supabase.auth.getSession();
@@ -14,16 +15,11 @@ export default async function BookAppointmentPage() {
   if (!session) {
     redirect('/login?redirect=/appointments/book');
   }
+
+  // Get or create user profile with robust error handling
+  const { userProfile, role } = await getOrCreateUserProfile(session);
   
-  // Get user profile from database
-  const { data: profile, error: profileError } = await supabase
-    .from('users')
-    .select('*')
-    .eq('email', session.user.email)
-    .single();
-  
-  if (profileError) {
-    console.error('Error fetching user profile:', profileError);
+  if (!userProfile) {
     return (
       <div className="min-h-screen p-6">
         <div className="max-w-4xl mx-auto">
@@ -37,7 +33,7 @@ export default async function BookAppointmentPage() {
   }
   
   // Check if user is a client
-  if (profile.role !== UserRole.CLIENT) {
+  if (role !== UserRole.CLIENT) {
     return (
       <div className="min-h-screen p-6">
         <div className="max-w-4xl mx-auto">

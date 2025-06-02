@@ -81,18 +81,15 @@ export class Professional {
   /**
    * Creates a Professional entity from a User entity
    * @param user User entity
-   * @param specialty Optional specialty
+   * @param specialty Professional specialty
    * @returns Professional entity
    */
   public static fromUser(user: User, specialty?: string): Professional {
-    return new Professional(
-      0, // ID will be assigned by the database
-      user.getName(),
-      specialty ?? null,
-      user.getId(),
-      new Date(),
-      new Date()
-    );
+    return Professional.create({
+      name: user.getName(),
+      specialty: specialty ?? null,
+      userId: user.getId() ?? null
+    });
   }
   
   /**

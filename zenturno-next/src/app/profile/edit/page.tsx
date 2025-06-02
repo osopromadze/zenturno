@@ -5,7 +5,7 @@ import { UserRole } from '@/domain/user/UserRole';
 
 export default async function EditProfilePage() {
   // Create Supabase client
-  const supabase = createClient();
+  const supabase = await createClient();
   
   // Check if user is logged in
   const { data: { session } } = await supabase.auth.getSession();
