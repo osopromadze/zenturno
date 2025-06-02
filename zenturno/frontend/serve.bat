@@ -1,3 +1,0 @@
-@echo off
-echo Serving React application from build folder...
-npx serve -s build 

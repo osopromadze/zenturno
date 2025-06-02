@@ -323,3 +323,35 @@ remove navbar from auth pages, take same logo from home page and put on top cent
 expand dot pattern background on auth page to every element, logo and form 
 
 -----
+
+Fix appointment booking system functionality. The service selector shows no information when creating new appointments, and subsequent steps in the booking flow are not working properly.
+
+-----
+
+After fixing services table, when selecting professionals there's an error. The professionals table exists but appears empty and has incorrect schema with only user_id column but missing name, specialty, email, phone columns.
+
+-----
+
+After selecting service and professional, the "Continue to Confirmation" button shows "Missing required fields" error. The issue is in createAppointment action using parseInt() on UUID strings causing serviceId and professionalId to become NaN.
+
+-----
+
+After successful appointment creation, the UI shows "An unexpected error occurred" even though the appointment is created in database. The problem is that redirect() in Next.js 15 throws a NEXT_REDIRECT exception which is being caught by try/catch.
+
+-----
+
+The appointments page shows "column appointments.date_time does not exist" error after successful appointment creation. There's inconsistency between CREATE operations using 'date' and READ operations using 'date_time' column names.
+
+-----
+
+Remove all debugging logs added during troubleshooting from BookingForm.tsx and appointment.ts. Clean up console.log statements, debug useEffect hooks, and restore original styling while keeping essential functionality.
+
+-----
+
+Professional registration email confirmation works but no record is created in database. Console shows "new row violates row-level security policy for table professionals" error. Need to fix RLS policies to allow authenticated users to insert professional records.
+
+-----
+
+When confirming appointments, the confirmation button appears briefly with a NEXT_REDIRECT error message before the flow continues correctly. Fix the error handling to filter out NEXT_REDIRECT exceptions since they are normal behavior in Next.js 15.
+
+-----
