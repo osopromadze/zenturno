@@ -10,7 +10,7 @@ import { Service } from '../service/Service';
 export type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed';
 
 export class Appointment {
-  private readonly id: number;
+  private readonly id: string | number;
   private dateTime: Date;
   private clientId: number | null;
   private professionalId: number | null;
@@ -25,7 +25,7 @@ export class Appointment {
   private service?: Service;
   
   private constructor(
-    id: number,
+    id: string | number,
     dateTime: Date,
     clientId: number | null,
     professionalId: number | null,
@@ -56,7 +56,7 @@ export class Appointment {
    * @returns Appointment entity
    */
   public static create(params: {
-    id?: number;
+    id?: string | number;
     dateTime: Date;
     clientId?: number | null;
     professionalId?: number | null;
@@ -98,8 +98,9 @@ export class Appointment {
    * @returns Appointment entity
    */
   public static fromDatabaseRow(row: {
-    id: number;
-    date: string;
+    id: string | number;
+    date?: string;
+    date_time?: string;
     client_id: number | null;
     professional_id: number | null;
     service_id: number | null;
@@ -107,9 +108,15 @@ export class Appointment {
     created_at: string;
     updated_at: string;
   }): Appointment {
+    // Handle both date and date_time field names
+    const dateString = row.date || row.date_time;
+    if (!dateString) {
+      throw new Error('Appointment date is required');
+    }
+    
     return new Appointment(
       row.id,
-      new Date(row.date),
+      new Date(dateString),
       row.client_id,
       row.professional_id,
       row.service_id,
@@ -124,14 +131,14 @@ export class Appointment {
    * @returns Database insert DTO
    */
   public toDatabaseInsertDto(): {
-    date_time: string;
+    date: string;
     client_id: number | null;
     professional_id: number | null;
     service_id: number | null;
     status: string;
   } {
     return {
-      date_time: this.dateTime.toISOString(),
+      date: this.dateTime.toISOString(),
       client_id: this.clientId,
       professional_id: this.professionalId,
       service_id: this.serviceId,
@@ -144,7 +151,7 @@ export class Appointment {
    * @returns Database update DTO
    */
   public toDatabaseUpdateDto(): {
-    date_time?: string;
+    date?: string;
     client_id?: number | null;
     professional_id?: number | null;
     service_id?: number | null;
@@ -152,7 +159,7 @@ export class Appointment {
     updated_at: string;
   } {
     return {
-      date_time: this.dateTime.toISOString(),
+      date: this.dateTime.toISOString(),
       client_id: this.clientId,
       professional_id: this.professionalId,
       service_id: this.serviceId,
@@ -251,8 +258,11 @@ export class Appointment {
     });
   }
   
-  // Getters
-  public getId(): number {
+  /**
+   * Gets the appointment ID
+   * @returns Appointment ID
+   */
+  public getId(): string | number {
     return this.id;
   }
   

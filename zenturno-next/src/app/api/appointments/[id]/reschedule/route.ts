@@ -7,31 +7,36 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const appointmentId = parseInt(id, 10);
     
-    if (isNaN(appointmentId)) {
+    // No need to parse as integer since ID could be UUID or integer
+    if (!id || id.trim() === '') {
       return NextResponse.json(
         { error: 'Invalid appointment ID' },
         { status: 400 }
       );
     }
-
-    const body = await request.json();
-    const { newDate, newTime } = body;
     
-    if (!newDate || !newTime) {
+    const formData = await request.formData();
+    const date = formData.get('date') as string;
+    const time = formData.get('time') as string;
+    
+    // Validate required fields
+    if (!date || !time) {
       return NextResponse.json(
-        { error: 'New date and time are required' },
+        { error: 'Date and time are required' },
         { status: 400 }
       );
     }
-
-    // Create FormData to match the function signature
-    const formData = new FormData();
-    const dateTime = new Date(`${newDate}T${newTime}`);
-    formData.append('dateTime', dateTime.toISOString());
     
-    const result = await rescheduleAppointment(appointmentId, formData);
+    // Combine date and time into a proper datetime string
+    const dateTime = new Date(`${date}T${time}`);
+    
+    // Create new FormData with the combined dateTime
+    const newFormData = new FormData();
+    newFormData.append('dateTime', dateTime.toISOString());
+    
+    // Pass shouldRedirect=false to prevent redirect in API route
+    const result = await rescheduleAppointment(id, newFormData, false);
     
     if (result?.error) {
       return NextResponse.json(

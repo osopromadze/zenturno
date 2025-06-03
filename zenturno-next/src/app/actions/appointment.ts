@@ -134,8 +134,9 @@ export async function createAppointment(formData: FormData) {
  * Updates an appointment's status
  */
 export async function updateAppointmentStatus(
-  appointmentId: number,
-  status: AppointmentStatus
+  appointmentId: string | number,
+  status: AppointmentStatus,
+  shouldRedirect: boolean = true
 ) {
   // Create Supabase client
   const supabase = await createClient();
@@ -255,43 +256,50 @@ export async function updateAppointmentStatus(
       return { error: 'Failed to update appointment' };
     }
     
-    // Redirect to appointments page
-    redirect(`/appointments?status=${status}`);
+    // Only redirect if called from server action, not from API route
+    if (shouldRedirect) {
+      redirect(`/appointments?status=${status}`);
+    }
+    
+    return { success: true };
   } catch (error) {
+    // Don't log NEXT_REDIRECT as an error when it's expected
+    if (shouldRedirect && error && typeof error === 'object' && 'digest' in error && String(error.digest).includes('NEXT_REDIRECT')) {
+      throw error; // Re-throw redirect errors when they're expected
+    }
     console.error('Error updating appointment:', error);
     return { error: 'An unexpected error occurred' };
   }
-  
-  return { success: true };
 }
 
 /**
  * Confirms an appointment
  */
-export async function confirmAppointment(appointmentId: number) {
-  return updateAppointmentStatus(appointmentId, 'confirmed');
+export async function confirmAppointment(appointmentId: string | number, shouldRedirect: boolean = true) {
+  return updateAppointmentStatus(appointmentId, 'confirmed', shouldRedirect);
 }
 
 /**
  * Cancels an appointment
  */
-export async function cancelAppointment(appointmentId: number) {
-  return updateAppointmentStatus(appointmentId, 'cancelled');
+export async function cancelAppointment(appointmentId: string | number, shouldRedirect: boolean = true) {
+  return updateAppointmentStatus(appointmentId, 'cancelled', shouldRedirect);
 }
 
 /**
  * Completes an appointment
  */
-export async function completeAppointment(appointmentId: number) {
-  return updateAppointmentStatus(appointmentId, 'completed');
+export async function completeAppointment(appointmentId: string | number, shouldRedirect: boolean = true) {
+  return updateAppointmentStatus(appointmentId, 'completed', shouldRedirect);
 }
 
 /**
  * Reschedules an appointment
  */
 export async function rescheduleAppointment(
-  appointmentId: number,
-  formData: FormData
+  appointmentId: string | number,
+  formData: FormData,
+  shouldRedirect: boolean = true
 ) {
   // Create Supabase client
   const supabase = await createClient();
@@ -424,12 +432,18 @@ export async function rescheduleAppointment(
       return { error: 'Failed to reschedule appointment' };
     }
     
-    // Redirect to appointments page
-    redirect(`/appointments?status=${appointment.getStatus()}`);
+    // Only redirect if called from server action, not from API route
+    if (shouldRedirect) {
+      redirect(`/appointments?status=${appointment.getStatus()}`);
+    }
+    
+    return { success: true };
   } catch (error) {
+    // Don't log NEXT_REDIRECT as an error when it's expected
+    if (shouldRedirect && error && typeof error === 'object' && 'digest' in error && String(error.digest).includes('NEXT_REDIRECT')) {
+      throw error; // Re-throw redirect errors when they're expected
+    }
     console.error('Error rescheduling appointment:', error);
     return { error: 'An unexpected error occurred' };
   }
-  
-  return { success: true };
 }

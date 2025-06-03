@@ -7,6 +7,7 @@ import { Client } from '@/domain/client/Client';
 import { Service } from '@/domain/service/Service';
 import { getOrCreateUserProfile } from '@/lib/server-utils';
 import Link from 'next/link';
+import AppointmentListActions from './AppointmentListActions';
 
 interface PageProps {
   searchParams: Promise<{ status?: string }>
@@ -213,7 +214,7 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
             {role === UserRole.CLIENT && (
               <Link 
                 href="/appointments/book" 
-                className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
               >
                 Book New Appointment
               </Link>
@@ -226,31 +227,51 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
           <div className="flex flex-wrap gap-2">
             <Link 
               href="/appointments"
-              className={`px-4 py-2 rounded-md ${statusFilter === 'all' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
+              className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                statusFilter === 'all' 
+                  ? 'bg-blue-600 text-white shadow-md' 
+                  : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+              }`}
             >
               All
             </Link>
             <Link 
               href="/appointments?status=pending"
-              className={`px-4 py-2 rounded-md ${statusFilter === 'pending' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
+              className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                statusFilter === 'pending' 
+                  ? 'bg-blue-600 text-white shadow-md' 
+                  : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+              }`}
             >
               Pending
             </Link>
             <Link 
               href="/appointments?status=confirmed"
-              className={`px-4 py-2 rounded-md ${statusFilter === 'confirmed' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
+              className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                statusFilter === 'confirmed' 
+                  ? 'bg-blue-600 text-white shadow-md' 
+                  : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+              }`}
             >
               Confirmed
             </Link>
             <Link 
               href="/appointments?status=cancelled"
-              className={`px-4 py-2 rounded-md ${statusFilter === 'cancelled' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
+              className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                statusFilter === 'cancelled' 
+                  ? 'bg-blue-600 text-white shadow-md' 
+                  : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+              }`}
             >
               Cancelled
             </Link>
             <Link 
               href="/appointments?status=completed"
-              className={`px-4 py-2 rounded-md ${statusFilter === 'completed' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
+              className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                statusFilter === 'completed' 
+                  ? 'bg-blue-600 text-white shadow-md' 
+                  : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+              }`}
             >
               Completed
             </Link>
@@ -263,7 +284,7 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
             <p className="text-gray-600 text-center py-8">
               No appointments found. 
               {role === UserRole.CLIENT && (
-                <Link href="/appointments/book" className="text-primary-600 ml-1 hover:underline">
+                <Link href="/appointments/book" className="text-blue-600 ml-1 hover:underline font-medium">
                   Book an appointment
                 </Link>
               )}
@@ -332,77 +353,12 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
                     </span>
                     
                     <div className="mt-4 flex flex-wrap gap-2">
-                      {/* Show different actions based on role and appointment status */}
-                      {appointment.getStatus() === 'pending' && (
-                        <>
-                          <Link 
-                            href={`/appointments/${appointment.getId()}/reschedule`}
-                            className="px-3 py-1 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm"
-                          >
-                            Reschedule
-                          </Link>
-                          
-                          {role === UserRole.PROFESSIONAL && (
-                            <form action={`/api/appointments/${appointment.getId()}/confirm`} method="POST">
-                              <button 
-                                type="submit"
-                                className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm"
-                              >
-                                Confirm
-                              </button>
-                            </form>
-                          )}
-                          
-                          <form action={`/api/appointments/${appointment.getId()}/cancel`} method="POST">
-                            <button 
-                              type="submit"
-                              className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
-                            >
-                              Cancel
-                            </button>
-                          </form>
-                        </>
-                      )}
-                      
-                      {appointment.getStatus() === 'confirmed' && (
-                        <>
-                          {appointment.canReschedule() && (
-                            <Link 
-                              href={`/appointments/${appointment.getId()}/reschedule`}
-                              className="px-3 py-1 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm"
-                            >
-                              Reschedule
-                            </Link>
-                          )}
-                          
-                          {role === UserRole.PROFESSIONAL && (
-                            <form action={`/api/appointments/${appointment.getId()}/complete`} method="POST">
-                              <button 
-                                type="submit"
-                                className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
-                              >
-                                Mark Completed
-                              </button>
-                            </form>
-                          )}
-                          
-                          <form action={`/api/appointments/${appointment.getId()}/cancel`} method="POST">
-                            <button 
-                              type="submit"
-                              className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
-                            >
-                              Cancel
-                            </button>
-                          </form>
-                        </>
-                      )}
-                      
-                      <Link 
-                        href={`/appointments/${appointment.getId()}`}
-                        className="px-3 py-1 bg-primary-600 text-white rounded-md hover:bg-primary-700 text-sm"
-                      >
-                        View Details
-                      </Link>
+                      <AppointmentListActions
+                        appointmentId={appointment.getId()}
+                        status={appointment.getStatus()}
+                        canReschedule={appointment.canReschedule()}
+                        userRole={role}
+                      />
                     </div>
                   </div>
                 </div>

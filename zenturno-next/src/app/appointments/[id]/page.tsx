@@ -5,6 +5,7 @@ import { Professional } from '@/domain/professional/Professional';
 import { Client } from '@/domain/client/Client';
 import { Service } from '@/domain/service/Service';
 import { UserRole } from '@/domain/user/UserRole';
+import AppointmentActions from './AppointmentActions';
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -12,9 +13,9 @@ interface PageProps {
 
 export default async function AppointmentDetailPage({ params }: PageProps) {
   const { id } = await params;
-  const appointmentId = parseInt(id, 10);
   
-  if (isNaN(appointmentId)) {
+  // No need to parse as integer since ID could be UUID or integer
+  if (!id || id.trim() === '') {
     redirect('/appointments');
   }
   
@@ -85,7 +86,7 @@ export default async function AppointmentDetailPage({ params }: PageProps) {
       professionals:professional_id(*),
       services:service_id(*)
     `)
-    .eq('id', appointmentId)
+    .eq('id', id)
     .single();
   
   if (appointmentError) {
@@ -262,72 +263,12 @@ export default async function AppointmentDetailPage({ params }: PageProps) {
             {/* Appointment actions */}
             <div className="pt-4 border-t">
               <h3 className="text-lg font-semibold mb-3">Actions</h3>
-              <div className="flex flex-wrap gap-3">
-                {/* Show different actions based on role and appointment status */}
-                {appointment.getStatus() === 'pending' && (
-                  <>
-                    <a 
-                      href={`/appointments/${appointment.getId()}/reschedule`}
-                      className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
-                    >
-                      Reschedule
-                    </a>
-                    
-                    {role === UserRole.PROFESSIONAL && (
-                      <form action={`/api/appointments/${appointment.getId()}/confirm`} method="POST">
-                        <button 
-                          type="submit"
-                          className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-                        >
-                          Confirm
-                        </button>
-                      </form>
-                    )}
-                    
-                    <form action={`/api/appointments/${appointment.getId()}/cancel`} method="POST">
-                      <button 
-                        type="submit"
-                        className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                      >
-                        Cancel
-                      </button>
-                    </form>
-                  </>
-                )}
-                
-                {appointment.getStatus() === 'confirmed' && (
-                  <>
-                    {appointment.canReschedule() && (
-                      <a 
-                        href={`/appointments/${appointment.getId()}/reschedule`}
-                        className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
-                      >
-                        Reschedule
-                      </a>
-                    )}
-                    
-                    {role === UserRole.PROFESSIONAL && (
-                      <form action={`/api/appointments/${appointment.getId()}/complete`} method="POST">
-                        <button 
-                          type="submit"
-                          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                        >
-                          Mark Completed
-                        </button>
-                      </form>
-                    )}
-                    
-                    <form action={`/api/appointments/${appointment.getId()}/cancel`} method="POST">
-                      <button 
-                        type="submit"
-                        className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                      >
-                        Cancel
-                      </button>
-                    </form>
-                  </>
-                )}
-              </div>
+              <AppointmentActions
+                appointmentId={appointment.getId()}
+                status={appointment.getStatus()}
+                canReschedule={appointment.canReschedule()}
+                userRole={role}
+              />
             </div>
           </div>
         </div>

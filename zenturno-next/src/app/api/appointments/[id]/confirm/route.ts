@@ -7,16 +7,17 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const appointmentId = parseInt(id, 10);
     
-    if (isNaN(appointmentId)) {
+    // No need to parse as integer since ID could be UUID or integer
+    if (!id || id.trim() === '') {
       return NextResponse.json(
         { error: 'Invalid appointment ID' },
         { status: 400 }
       );
     }
     
-    const result = await confirmAppointment(appointmentId);
+    // Pass shouldRedirect=false to prevent redirect in API route
+    const result = await confirmAppointment(id, false);
     
     if (result?.error) {
       return NextResponse.json(

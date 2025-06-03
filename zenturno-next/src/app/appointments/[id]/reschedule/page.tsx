@@ -5,6 +5,7 @@ import { Professional } from '@/domain/professional/Professional';
 import { Client } from '@/domain/client/Client';
 import { Service } from '@/domain/service/Service';
 import { UserRole } from '@/domain/user/UserRole';
+import RescheduleForm from './RescheduleForm';
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -12,9 +13,9 @@ interface PageProps {
 
 export default async function RescheduleAppointmentPage({ params }: PageProps) {
   const { id } = await params;
-  const appointmentId = parseInt(id, 10);
   
-  if (isNaN(appointmentId)) {
+  // No need to parse as integer since ID could be UUID or integer
+  if (!id || id.trim() === '') {
     redirect('/appointments');
   }
   
@@ -85,7 +86,7 @@ export default async function RescheduleAppointmentPage({ params }: PageProps) {
       professionals:professional_id(*),
       services:service_id(*)
     `)
-    .eq('id', appointmentId)
+    .eq('id', id)
     .single();
   
   if (appointmentError) {
@@ -168,43 +169,34 @@ export default async function RescheduleAppointmentPage({ params }: PageProps) {
   // Format current date and time
   const formattedDateTime = appointment.formatDateTime();
   
-  // Get current date and time for the date input
-  const currentDateTime = new Date(appointmentData.date_time);
-  const currentDate = currentDateTime.toISOString().split('T')[0];
-  const currentTime = currentDateTime.toTimeString().slice(0, 5);
+  // Get current date and time for the date input using the appointment entity
+  const appointmentDateTime = appointment.getDateTime();
   
-  // Generate available time slots
-  const generateTimeSlots = () => {
-    const slots = [];
-    const startHour = 9; // 9 AM
-    const endHour = 17; // 5 PM
-    const interval = 30; // 30 minutes
-    
-    for (let hour = startHour; hour <= endHour; hour++) {
-      for (let minute = 0; minute < 60; minute += interval) {
-        if (hour === endHour && minute > 0) continue;
-        
-        const formattedHour = hour.toString().padStart(2, '0');
-        const formattedMinute = minute.toString().padStart(2, '0');
-        const time = `${formattedHour}:${formattedMinute}`;
-        
-        slots.push(time);
-      }
-    }
-    
-    return slots;
-  };
+  // Validate that we have a valid date
+  if (!appointmentDateTime || isNaN(appointmentDateTime.getTime())) {
+    return (
+      <div className="min-h-screen p-6">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl font-bold mb-8">Reschedule Appointment</h1>
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            Error: Invalid appointment date. Please contact support.
+          </div>
+        </div>
+      </div>
+    );
+  }
   
-  // No need for a server action wrapper here, we'll use an API route instead
+  const currentDate = appointmentDateTime.toISOString().split('T')[0];
+  const currentTime = appointmentDateTime.toTimeString().slice(0, 5);
   
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen p-6 bg-gray-50">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Reschedule Appointment</h1>
           <div className="flex space-x-4">
             <a 
-              href={`/appointments/${appointmentId}`} 
+              href={`/appointments/${id}`} 
               className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
             >
               Back to Appointment
@@ -212,7 +204,7 @@ export default async function RescheduleAppointmentPage({ params }: PageProps) {
           </div>
         </div>
         
-        <div className="bg-white shadow rounded-lg overflow-hidden">
+        <div className="bg-white shadow rounded-lg overflow-hidden mb-8">
           {/* Current appointment details */}
           <div className="p-6 border-b">
             <h2 className="text-xl font-semibold mb-4">Current Appointment</h2>
@@ -239,52 +231,13 @@ export default async function RescheduleAppointmentPage({ params }: PageProps) {
           </div>
           
           {/* Reschedule form */}
-          <div className="p-6">
+          <div className="p-6 pb-8">
             <h2 className="text-xl font-semibold mb-4">Select New Date & Time</h2>
-            <form action={`/api/appointments/${appointmentId}/reschedule`} method="POST" className="space-y-6">
-              <div>
-                <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
-                  Date
-                </label>
-                <input
-                  type="date"
-                  id="date"
-                  name="date"
-                  defaultValue={currentDate}
-                  min={new Date().toISOString().split('T')[0]}
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">
-                  Time
-                </label>
-                <select
-                  id="time"
-                  name="time"
-                  defaultValue={currentTime}
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  required
-                >
-                  {generateTimeSlots().map((time) => (
-                    <option key={time} value={time}>
-                      {time}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              
-              <div>
-                <button
-                  type="submit"
-                  className="w-full py-3 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                >
-                  Reschedule Appointment
-                </button>
-              </div>
-            </form>
+            <RescheduleForm
+              appointmentId={id}
+              currentDate={currentDate}
+              currentTime={currentTime}
+            />
           </div>
         </div>
       </div>
