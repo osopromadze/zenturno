@@ -360,3 +360,6 @@ I need is reset password functionality
 
 -----
 
+If the user is logged in, I do not want to show the Sign In and Sign Up buttons in the homepage navbar. Instead, show a Dashboard link button.
+
+-----

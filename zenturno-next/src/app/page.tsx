@@ -9,10 +9,22 @@ import { MagicCard } from '@/components/magicui/magic-card';
 import { Marquee } from '@/components/magicui/marquee';
 import { BorderBeam } from '@/components/magicui/border-beam';
 import { Particles } from '@/components/magicui/particles';
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createClient } from '@/lib/supabase/client';
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+    };
+    
+    checkAuthStatus();
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden bg-blue-950">
@@ -48,18 +60,29 @@ export default function Home() {
               
               {/* CTA Buttons */}
               <div className="flex items-center space-x-4">
-                <Link 
-                  href="/login"
-                  className="hidden sm:inline-flex px-4 py-2 text-sm font-medium text-white hover:text-blue-300 transition-colors"
-                >
-                  Sign In
-                </Link>
-                <Link 
-                  href="/signup"
-                  className="px-4 py-2 rounded-full text-sm font-medium bg-white/10 hover:bg-white/20 text-white border border-white/10 transition-all duration-200 backdrop-blur-sm shadow-lg shadow-blue-500/10"
-                >
-                  Sign Up Free
-                </Link>
+                {isAuthenticated ? (
+                  <Link 
+                    href="/dashboard"
+                    className="px-4 py-2 rounded-full text-sm font-medium bg-blue-600/80 hover:bg-blue-700/80 text-white border border-blue-500/30 transition-all duration-200 backdrop-blur-sm shadow-lg shadow-blue-500/10"
+                  >
+                    Dashboard
+                  </Link>
+                ) : (
+                  <>
+                    <Link 
+                      href="/login"
+                      className="hidden sm:inline-flex px-4 py-2 text-sm font-medium text-white hover:text-blue-300 transition-colors"
+                    >
+                      Sign In
+                    </Link>
+                    <Link 
+                      href="/signup"
+                      className="px-4 py-2 rounded-full text-sm font-medium bg-white/10 hover:bg-white/20 text-white border border-white/10 transition-all duration-200 backdrop-blur-sm shadow-lg shadow-blue-500/10"
+                    >
+                      Sign Up Free
+                    </Link>
+                  </>
+                )}
                 
                 {/* Mobile menu button */}
                 <button 
@@ -114,13 +137,32 @@ export default function Home() {
                 >
                   FAQ
                 </Link>
-                <Link 
-                  href="/login" 
-                  className="block px-3 py-2 text-base font-medium text-white hover:bg-white/10 rounded-md transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Sign In
-                </Link>
+                {isAuthenticated ? (
+                  <Link 
+                    href="/dashboard" 
+                    className="block px-3 py-2 text-base font-medium text-white hover:bg-white/10 rounded-md transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Dashboard
+                  </Link>
+                ) : (
+                  <>
+                    <Link 
+                      href="/login" 
+                      className="block px-3 py-2 text-base font-medium text-white hover:bg-white/10 rounded-md transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Sign In
+                    </Link>
+                    <Link 
+                      href="/signup" 
+                      className="block px-3 py-2 text-base font-medium text-white hover:bg-white/10 rounded-md transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Sign Up
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
