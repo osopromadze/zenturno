@@ -18,13 +18,28 @@ export default function MagicLoginForm({ redirectTo = '/dashboard' }: LoginFormP
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [isEmailUnconfirmed, setIsEmailUnconfirmed] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+    setIsEmailUnconfirmed(false)
     setLoading(true)
+
+    // Basic validation
+    if (!email.trim()) {
+      setError('Email is required')
+      setLoading(false)
+      return
+    }
+
+    if (!password.trim()) {
+      setError('Password is required')
+      setLoading(false)
+      return
+    }
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -33,6 +48,11 @@ export default function MagicLoginForm({ redirectTo = '/dashboard' }: LoginFormP
       })
 
       if (error) {
+        // Check for specific error types
+        if (error.message.includes('Email not confirmed')) {
+          setIsEmailUnconfirmed(true)
+          throw new Error('Your email has not been confirmed. Please check your inbox for the confirmation link or request a new one.')
+        }
         throw error
       }
 
@@ -42,7 +62,46 @@ export default function MagicLoginForm({ redirectTo = '/dashboard' }: LoginFormP
       // Redirect to the specified page or dashboard
       router.push(redirectTo)
     } catch (error: any) {
-      setError(error.message || 'Failed to sign in')
+      console.error('Login error:', error)
+      
+      // Provide user-friendly error messages
+      if (error.message.includes('Invalid login')) {
+        setError('Invalid email or password. Please try again.')
+      } else if (error.message.includes('rate limit')) {
+        setError('Too many login attempts. Please try again later.')
+      } else {
+        setError(error.message || 'Failed to sign in')
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResendConfirmation = async () => {
+    if (!email) {
+      setError('Please enter your email address first')
+      return
+    }
+    
+    setLoading(true)
+    setError(null)
+    
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback?redirect_to=/dashboard`,
+        },
+      })
+      
+      if (error) throw error
+      
+      // Show success message
+      setError('Confirmation email sent! Please check your inbox and spam folder.')
+    } catch (error: any) {
+      console.error('Resend confirmation error:', error)
+      setError(error.message || 'Failed to resend confirmation email')
     } finally {
       setLoading(false)
     }
@@ -119,8 +178,31 @@ export default function MagicLoginForm({ redirectTo = '/dashboard' }: LoginFormP
         </div>
         
         {error && (
-          <div className="p-3 bg-red-900/30 border border-red-800 rounded-lg text-red-300 text-sm animate-pulse">
-            {error}
+          <div className="p-4 bg-red-900/30 border border-red-800 rounded-lg text-red-200 mb-4 shadow-md">
+            <div className="flex items-start">
+              <div className="flex-shrink-0 mt-0.5">
+                <svg className="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <div className="ml-3 flex-1">
+                <h3 className="text-sm font-medium text-red-300">Authentication Error</h3>
+                <div className="mt-2 text-sm text-red-200">
+                  {error}
+                  {isEmailUnconfirmed && (
+                    <div className="mt-3">
+                      <button 
+                        onClick={handleResendConfirmation}
+                        disabled={loading}
+                        className="text-blue-400 hover:text-blue-300 underline font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {loading ? 'Sending...' : 'Resend confirmation email'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         )}
         
@@ -141,18 +223,29 @@ export default function MagicLoginForm({ redirectTo = '/dashboard' }: LoginFormP
         </RippleButton>
         
         <div className="text-center">
-          <p className="text-gray-400 text-sm mb-4">
+          <p className="text-gray-400 text-sm mb-3">
             Don&apos;t have an account?{' '}
             <Link href="/signup" className="text-blue-400 hover:text-blue-300 transition-colors font-medium">
               Sign up
             </Link>
           </p>
           
+          <p className="text-gray-400 text-sm mb-3">
+            Forgot your password?{' '}
+            <Link href="/forgot-password" className="text-blue-400 hover:text-blue-300 transition-colors font-medium">
+              Reset it here
+            </Link>
+          </p>
+          
           <p className="text-gray-400 text-sm">
             Having trouble with email confirmation?{' '}
-            <Link href="/signup" className="text-blue-400 hover:text-blue-300 transition-colors font-medium">
-              Resend confirmation email
-            </Link>
+            <button 
+              onClick={handleResendConfirmation}
+              disabled={loading}
+              className="text-blue-400 hover:text-blue-300 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Sending...' : 'Resend confirmation email'}
+            </button>
           </p>
         </div>
       </form>

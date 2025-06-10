@@ -36,6 +36,21 @@ export default function MagicSignupForm() {
       return
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email address')
+      setLoading(false)
+      return
+    }
+
+    // Validate password strength
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long')
+      setLoading(false)
+      return
+    }
+
     // Validate password match
     if (password !== confirmPassword) {
       setError('Passwords do not match')
@@ -58,7 +73,9 @@ export default function MagicSignupForm() {
     }
 
     try {
-      // Sign up with Supabase Auth - the callback will handle creating database records
+      console.log('Starting signup process...');
+      
+      // Sign up with Supabase Auth without email confirmation
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
@@ -69,21 +86,90 @@ export default function MagicSignupForm() {
             phone: role === 'client' ? phone : null,
             specialty: role === 'professional' ? specialty : null,
           },
-          emailRedirectTo: `${window.location.origin}/auth/callback?redirect_to=/dashboard`,
+          // No emailRedirectTo since we're not using email confirmation
         },
       })
+
+      console.log('Signup response:', { authData, authError });
 
       if (authError) {
         throw authError
       }
 
-      // If signup was successful, show success message
+      // Check if the user was created successfully
       if (authData.user) {
-        setSuccess(true)
+        console.log('User created successfully:', authData.user);
+        
+        // Since email confirmation is disabled, we can try to sign in immediately
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        
+        console.log('Sign in response:', { signInData, signInError });
+        
+        if (signInError) {
+          console.error('Error signing in after signup:', signInError);
+          // Still show success even if auto-login fails
+          setSuccess(true);
+        } else {
+          // Redirect to dashboard on successful login
+          router.push('/dashboard');
+        }
+      } else {
+        // This shouldn't happen if authError is null, but just in case
+        setError('User account was not created. Please try again.');
       }
     } catch (error: any) {
       console.error('Signup error:', error)
-      setError(error.message || 'Failed to sign up')
+      console.error('Detailed error information:', {
+        message: error.message,
+        name: error.name,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+        stack: error.stack
+      })
+      
+      // Provide more user-friendly error messages
+      if (error.message?.includes('email')) {
+        setError('This email address is already in use. Please try another one.')
+      } else if (error.message?.includes('password')) {
+        setError('Password is too weak. Please choose a stronger password.')
+      } else {
+        setError(error.message || 'Failed to sign up. Please try again later.')
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Function to resend confirmation email
+  const handleResendConfirmation = async () => {
+    if (!email) {
+      setError('Please enter your email address first')
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback?redirect_to=/dashboard`,
+        },
+      })
+
+      if (error) throw error
+
+      // Show success message
+      setSuccess(true)
+    } catch (error: any) {
+      console.error('Resend confirmation error:', error)
+      setError(error.message || 'Failed to resend confirmation email')
     } finally {
       setLoading(false)
     }
@@ -92,24 +178,34 @@ export default function MagicSignupForm() {
   return (
     <div className="w-full">
       {success ? (
-        <div className="p-4 bg-blue-900/30 border border-blue-800 rounded-lg text-blue-200 text-center">
-          <div className="mb-3">
-            <svg className="h-12 w-12 text-blue-400 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="p-6 bg-blue-900/30 border border-blue-800 rounded-lg text-blue-200 text-center shadow-lg">
+          <div className="mb-4">
+            <svg className="h-16 w-16 text-blue-400 mx-auto animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h3 className="text-xl font-bold mb-2">Check your email</h3>
-          <p className="mb-4">
-            We've sent you a confirmation link. Please check your email and follow the instructions to complete your registration.
+          <h3 className="text-2xl font-bold mb-3">Check your email</h3>
+          <p className="mb-6 text-lg">
+            We've sent you a confirmation link to <span className="font-semibold text-blue-300">{email}</span>. Please check your inbox (and spam folder) and follow the instructions to complete your registration.
           </p>
-          <Link href="/login">
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Link href="/login">
+              <RippleButton
+                className="py-2.5 px-5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors border-0 font-medium"
+                rippleColor="rgba(59, 130, 246, 0.4)"
+              >
+                Go to Login
+              </RippleButton>
+            </Link>
             <RippleButton
-              className="inline-block py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors border-0"
-              rippleColor="rgba(59, 130, 246, 0.4)"
+              onClick={handleResendConfirmation}
+              disabled={loading}
+              className="py-2.5 px-5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors border-0 font-medium disabled:opacity-50"
+              rippleColor="rgba(156, 163, 175, 0.4)"
             >
-              Back to Login
+              {loading ? 'Sending...' : 'Resend Email'}
             </RippleButton>
-          </Link>
+          </div>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -344,8 +440,20 @@ export default function MagicSignupForm() {
           </div>
 
           {error && (
-            <div className="p-3 bg-red-900/30 border border-red-800 rounded-lg text-red-300 text-sm animate-pulse">
-              {error}
+            <div className="p-4 bg-red-900/30 border border-red-800 rounded-lg text-red-200 mb-4 shadow-md">
+              <div className="flex items-start">
+                <div className="flex-shrink-0 mt-0.5">
+                  <svg className="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-red-300">There was a problem with your submission</h3>
+                  <div className="mt-2 text-sm text-red-200">
+                    {error}
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 

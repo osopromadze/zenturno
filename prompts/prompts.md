@@ -355,3 +355,8 @@ Professional registration email confirmation works but no record is created in d
 When confirming appointments, the confirmation button appears briefly with a NEXT_REDIRECT error message before the flow continues correctly. Fix the error handling to filter out NEXT_REDIRECT exceptions since they are normal behavior in Next.js 15.
 
 -----
+
+I need is reset password functionality
+
+-----
+
