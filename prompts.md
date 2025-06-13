@@ -11,6 +11,7 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 5. [Historias de usuario](#5-historias-de-usuario)
 6. [Tickets de trabajo](#6-tickets-de-trabajo)
 7. [Pull requests](#7-pull-requests)
+8. [Bug Fixes and System Improvements](#8-bug-fixes-and-system-improvements)
 
 ---
 
@@ -203,4 +204,109 @@ Completa la sección así:
 **Pull Request 2**
 
 **Pull Request 3**
+
+---
+
+## 8. Bug Fixes and System Improvements
+
+### 8.1. Critical Date Processing Error Resolution
+
+**Issue:** "RangeError: Invalid time value" when attempting to reschedule appointments
+
+**Prompt 1:**
+"cuando reprogramo un Appointment me muestra un error ¿mira las imagenes y los logs para corregir el error?"
+
+**Resolution Implemented:**
+- Fixed database field consistency across all operations (insert, update, query)
+- Updated `Appointment.fromDatabaseRow()` method to handle both `date` and `date_time` field names
+- Modified `toDatabaseInsertDto()` and `toDatabaseUpdateDto()` methods to use correct field name
+- Enhanced error handling in reschedule page with proper date validation
+- Updated reschedule page to use domain entity methods instead of direct database field access
+
+**Files Modified:**
+- `src/app/actions/appointment.ts`
+- `src/app/appointments/page.tsx`
+- `src/domain/appointment/Appointment.ts`
+- `src/app/appointments/[id]/reschedule/page.tsx`
+
+### 8.2. UI Component Visibility and Layout Issues
+
+**Issue:** Reschedule and Cancel buttons not visible without user interaction, requiring clicks to appear
+
+**Prompt 2:**
+"cuando intento hacer el reschedule no se muestra los botones de Reschedule y Cancel, tienes que hacer un click en la pantalla para q estos aparescan ¿mira la imagen adjunta y corrigelo?"
+
+**Resolution Implemented:**
+- Refactored `RescheduleForm.tsx` component with improved layout structure
+- Changed CSS classes from undefined `primary-*` to standard Tailwind `blue-*` colors
+- Added proper wrapper containers and spacing (`pt-4`, `pb-8`)
+- Implemented responsive button layout with `flex-col sm:flex-row`
+- Added Cancel button functionality alongside Reschedule button
+- Enhanced page layout with better background contrast and spacing
+
+**Components Enhanced:**
+- `src/app/appointments/[id]/reschedule/RescheduleForm.tsx`
+- `src/app/appointments/[id]/reschedule/page.tsx`
+
+### 8.3. Filter Button State Management
+
+**Issue:** Selected filter buttons disappeared or lost visual distinction when active
+
+**Prompt 3:**
+"cuando utilizo los botones de filtro, el botón seleccionado desaparece filtrando los resultados por el boton seleccionado. ¿puedes corregir el estilo para que se muestre correctamente el boton seleccionado?"
+
+**Resolution Implemented:**
+- Replaced undefined `primary-*` CSS classes with standard Tailwind colors
+- Implemented clear visual distinction between active and inactive filter states
+- Active state: `bg-blue-600 text-white shadow-md`
+- Inactive state: `bg-gray-200 text-gray-800 hover:bg-gray-300`
+- Added smooth transitions and improved accessibility
+- Updated all related UI components for consistency
+
+**UI Improvements:**
+- Enhanced contrast and visibility of selected filters
+- Added `font-medium` for better text readability
+- Implemented `transition-colors` for smooth state changes
+- Fixed filter button visibility across all appointment status types
+
+### 8.4. Custom Confirmation Modal Implementation
+
+**Issue:** Native browser `alert()` and `confirm()` dialogs provided poor user experience and didn't match application design
+
+**Prompt 4:**
+"cuando cancelo un appointment se muestra un alert de confirmacion, el cual se ve muy mal, tal como se muestra en la imagen adjunta ¿siguiendo los estilos del proyecto puedes crear una ventana model para confirmar la cancelacion del appointment ?"
+
+**Solution Implemented:**
+- Created reusable `ConfirmationModal.tsx` component with modern design
+- Implemented modal with backdrop blur, centered positioning, and smooth animations
+- Added keyboard accessibility (ESC key to close) and click-outside-to-close functionality
+- Integrated loading states and disabled button management during operations
+- Replaced all native alerts with custom modal in appointment action components
+
+**Modal Features:**
+- Configurable title, message, and button text
+- Multiple visual types (danger, warning, info) with appropriate color schemes
+- Icon integration with contextual symbols
+- Responsive design with mobile-first approach
+- Accessibility features including focus management and keyboard navigation
+
+**Components Updated:**
+- `src/components/ui/ConfirmationModal.tsx` (new)
+- `src/app/appointments/AppointmentListActions.tsx`
+- `src/app/appointments/[id]/AppointmentActions.tsx`
+
+### 8.5. System-wide Consistency Improvements
+
+**Additional Enhancements:**
+- Standardized color scheme across all components using Tailwind's blue palette
+- Implemented consistent loading states and error handling
+- Enhanced transition effects for improved user experience
+- Added proper TypeScript types and interfaces for better code maintenance
+- Improved responsive design for mobile and desktop views
+
+**Technical Debt Addressed:**
+- Removed dependency on undefined CSS custom properties
+- Standardized database field naming conventions
+- Enhanced error handling and user feedback mechanisms
+- Improved component reusability and maintainability
 
