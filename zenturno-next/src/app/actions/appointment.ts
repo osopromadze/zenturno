@@ -126,8 +126,8 @@ export async function createAppointment(formData: FormData) {
     return { error: 'An unexpected error occurred' };
   }
   
-  // Redirect to appointments page (outside try/catch to avoid catching NEXT_REDIRECT)
-  redirect('/appointments?status=pending');
+  // Redirect to dashboard appointments page (outside try/catch to avoid catching NEXT_REDIRECT)
+  redirect('/dashboard/appointments?status=pending');
 }
 
 /**
@@ -258,7 +258,7 @@ export async function updateAppointmentStatus(
     
     // Only redirect if called from server action, not from API route
     if (shouldRedirect) {
-      redirect(`/appointments?status=${status}`);
+      redirect(`/dashboard/appointments?status=${status}`);
     }
     
     return { success: true };
@@ -434,7 +434,7 @@ export async function rescheduleAppointment(
     
     // Only redirect if called from server action, not from API route
     if (shouldRedirect) {
-      redirect(`/appointments?status=${appointment.getStatus()}`);
+      redirect(`/dashboard/appointments?status=${appointment.getStatus()}`);
     }
     
     return { success: true };

@@ -363,3 +363,20 @@ I need is reset password functionality
 If the user is logged in, I do not want to show the Sign In and Sign Up buttons in the homepage navbar. Instead, show a Dashboard link button.
 
 -----
+
+Analyze @free-nextjs-admin-dashboard-main. This is a template dashboard that uses the TailAdmin template. You can also check TailAdmin in context7. From now on, whenever we work on the dashboard, we will always use this template. When needed, copy the necessary code from @free-nextjs-admin-dashboard-main or refer to context7.
+
+-----
+I wanted you to analyze it so you have it in memory and can use it whenever needed. Now, let's change one thing: I see that we're using some SSR, but I don't need it. Just use client-side rendering whenever possible. In the dashboard, I notice that when navigating between pages, it refreshes and is very slow.
+
+-----
+Great, now let's work on the styles. Make the dashboard similar to TailAdmin using context7 and the template in @free-nextjs-admin-dashboard-main. I think this template is using different fonts.
+-----
+In the dashboard, when I go to any page like Profile or Appointments, the Dashboard link always stays highlighted as if it were still selected.
+-----
+Now it's solved. Let's fix the next styling issue: when I go to the Appointments page, the first button in the filters is not visible. The same happens with the "Book Appointment" button.
+-----
+Remove dark mode from the dashboard, as it's not needed for now.
+-----
+On the top-right menu button of the dashboard page, the username is hardcoded as "User". Update it to display the actual logged-in user's name. Additionally, the "Profile" option in the menu is non-functional—please ensure it navigates to the user's profile page.
+-----
