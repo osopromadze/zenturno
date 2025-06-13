@@ -150,8 +150,8 @@ export async function updateProfile(formData: FormData) {
       }
     }
     
-    // Redirect to profile page
-    redirect('/profile?updated=true');
+    // Redirect to dashboard profile page
+    redirect('/dashboard/profile?updated=true');
   } catch (error) {
     console.error('Error updating profile:', error);
     return { error: 'An unexpected error occurred' };

@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    return NextResponse.redirect(new URL('/profile', request.url));
+    return NextResponse.redirect(new URL('/dashboard/profile', request.url));
   } catch (error) {
     console.error('Error updating profile:', error);
     return NextResponse.json(
