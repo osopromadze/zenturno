@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 
 export default function ProfilePage() {
-  const { session, userProfile, role, isLoading, error } = useAuth();
+  const { session, userProfile, role, isLoading, error, signOut } = useAuth();
   const router = useRouter();
   
   useEffect(() => {
@@ -49,7 +49,13 @@ export default function ProfilePage() {
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Profile</h1>
           <button 
-            onClick={() => useAuth().signOut()}
+            onClick={async () => {
+              try {
+                await signOut();
+              } catch (error) {
+                console.error('Error signing out:', error);
+              }
+            }}
             className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
           >
             Logout
