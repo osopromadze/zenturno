@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
@@ -166,7 +166,7 @@ const AppointmentCard = ({ appointment, userRole }: AppointmentCardProps) => {
   );
 };
 
-export default function AppointmentsPage() {
+function AppointmentsContent() {
   const { session, userProfile, role, isLoading, error } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -432,5 +432,20 @@ export default function AppointmentsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function AppointmentsPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center">
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 border-4 border-t-primary rounded-full animate-spin"></div>
+          <p className="mt-4 text-gray-600">Loading appointments...</p>
+        </div>
+      </div>
+    }>
+      <AppointmentsContent />
+    </Suspense>
   );
 }
