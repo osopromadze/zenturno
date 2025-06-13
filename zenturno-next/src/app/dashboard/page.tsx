@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 
-export default function Dashboard() {
+function DashboardContent() {
   const { session, userProfile, role, isLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -145,5 +145,20 @@ function DashboardCard({ title, description, link }: { title: string; descriptio
       <h3 className="text-lg font-semibold mb-2">{title}</h3>
       <p className="text-gray-600">{description}</p>
     </Link>
+  );
+}
+
+export default function Dashboard() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 border-4 border-t-primary rounded-full animate-spin"></div>
+          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    }>
+      <DashboardContent />
+    </Suspense>
   );
 }
