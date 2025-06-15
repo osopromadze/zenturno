@@ -75,7 +75,7 @@ export default function MagicSignupForm() {
     try {
       console.log('Starting signup process...');
       
-      // Sign up with Supabase Auth without email confirmation
+      // Sign up with Supabase Auth - user must confirm email before login
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
@@ -86,7 +86,8 @@ export default function MagicSignupForm() {
             phone: role === 'client' ? phone : null,
             specialty: role === 'professional' ? specialty : null,
           },
-          // No emailRedirectTo since we're not using email confirmation
+          // Email confirmation is required - user must confirm before login
+          emailRedirectTo: `${window.location.origin}/auth/callback?redirect_to=/dashboard`,
         },
       })
 
@@ -100,22 +101,8 @@ export default function MagicSignupForm() {
       if (authData.user) {
         console.log('User created successfully:', authData.user);
         
-        // Since email confirmation is disabled, we can try to sign in immediately
-        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        
-        console.log('Sign in response:', { signInData, signInError });
-        
-        if (signInError) {
-          console.error('Error signing in after signup:', signInError);
-          // Still show success even if auto-login fails
-          setSuccess(true);
-        } else {
-          // Redirect to dashboard on successful login
-          router.push('/dashboard');
-        }
+        // Show success message - user needs to confirm email before logging in
+        setSuccess(true);
       } else {
         // This shouldn't happen if authError is null, but just in case
         setError('User account was not created. Please try again.');

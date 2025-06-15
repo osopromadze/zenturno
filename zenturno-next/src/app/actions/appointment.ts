@@ -82,7 +82,6 @@ export async function createAppointment(formData: FormData) {
         const { data: newClient, error: createClientError } = await supabase
           .from('clients')
           .insert({
-            name: profile.name,
             user_id: profile.id
           })
           .select('id')

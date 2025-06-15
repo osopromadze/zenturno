@@ -7,18 +7,22 @@ import { useAuth } from '@/context/AuthContext';
 import { createClient } from '@/lib/supabase/client';
 
 // Define types for our data
+interface UserInfo {
+  first_name: string;
+  last_name: string;
+  email: string;
+}
+
 interface Professional {
   id: number;
-  name: string;
-  specialty?: string;
   user_id: string;
+  users?: UserInfo;
 }
 
 interface Client {
   id: number;
-  name: string;
-  phone?: string;
   user_id: string;
+  users?: UserInfo;
 }
 
 interface Service {
@@ -103,6 +107,14 @@ const AppointmentCard = ({ appointment, userRole }: AppointmentCardProps) => {
     }).format(date);
   };
 
+  const getUserName = (user?: UserInfo): string => {
+    if (!user) return 'Unknown';
+    if (user.first_name && user.last_name) {
+      return `${user.first_name} ${user.last_name}`;
+    }
+    return user.first_name || user.last_name || user.email || 'Unknown';
+  };
+
   const canReschedule = ['pending', 'confirmed'].includes(appointment.status);
 
   return (
@@ -119,24 +131,14 @@ const AppointmentCard = ({ appointment, userRole }: AppointmentCardProps) => {
           {userRole === 'client' && appointment.professionals && (
             <p className="mt-2">
               <span className="text-gray-600">Professional:</span>{' '}
-              <span className="font-medium">{appointment.professionals.name}</span>
-              {appointment.professionals.specialty && (
-                <span className="text-gray-600 ml-1">
-                  ({appointment.professionals.specialty})
-                </span>
-              )}
+              <span className="font-medium">{getUserName(appointment.professionals.users)}</span>
             </p>
           )}
           
           {(userRole === 'professional' || userRole === 'admin') && appointment.clients && (
             <p className="mt-2">
               <span className="text-gray-600">Client:</span>{' '}
-              <span className="font-medium">{appointment.clients.name}</span>
-              {appointment.clients.phone && (
-                <span className="text-gray-600 ml-1">
-                  ({appointment.clients.phone})
-                </span>
-              )}
+              <span className="font-medium">{getUserName(appointment.clients.users)}</span>
             </p>
           )}
           
@@ -197,27 +199,50 @@ function AppointmentsContent() {
       const supabase = createClient();
       
       if (role === 'client') {
-        // Get client ID
-        const { data: clientData, error: clientError } = await supabase
+        // Get client ID - use maybeSingle to handle no results gracefully
+        console.log('Fetching client data for user_id:', userProfile.id);
+        let { data: clientData, error: clientError } = await supabase
           .from('clients')
           .select('id')
           .eq('user_id', userProfile.id)
-          .single();
+          .maybeSingle();
         
-        if (clientError) {
-          throw new Error('Error fetching client data');
+        console.log('Client query result:', { clientData, clientError });
+        
+        // If no client exists, create one
+        if (!clientError && !clientData) {
+          console.log('No client found, creating new client...');
+          const { data: newClient, error: createError } = await supabase
+            .from('clients')
+            .insert({ user_id: userProfile.id })
+            .select('id')
+            .single();
+          
+          if (createError) {
+            console.error('Error creating client:', createError);
+            throw new Error('Error creating client data');
+          }
+          
+          console.log('Created new client:', newClient);
+          clientData = newClient;
+        } else if (clientError) {
+          console.error('Error fetching client:', clientError);
+          throw new Error(`Error fetching client data: ${clientError.message}`);
         }
         
-        if (clientData) {
+        const finalClientData = clientData;
+        
+        if (finalClientData) {
+          console.log('Fetching appointments for client_id:', finalClientData.id);
           // Get appointments for this client
           let query = supabase
             .from('appointments')
             .select(`
               *,
-              professionals:professional_id (id, name, specialty, user_id),
+              professionals:professional_id (id, user_id, users:user_id(first_name, last_name, email)),
               services:service_id (id, name, price, duration_minutes)
             `)
-            .eq('client_id', clientData.id)
+            .eq('client_id', finalClientData.id)
             .order('date', { ascending: true });
           
           // Apply status filter if not 'all'
@@ -228,21 +253,46 @@ function AppointmentsContent() {
           const { data, error } = await query;
           
           if (error) {
+            console.error('Error fetching appointments:', error);
             throw new Error(error.message);
           } else {
+            console.log('Fetched appointments:', data);
             setAppointments(data || []);
           }
+        } else {
+          console.log('No client data available, setting empty appointments');
+          setAppointments([]);
         }
       } else if (role === 'professional') {
         // Get professional ID
-        const { data: professionalData, error: professionalError } = await supabase
+        console.log('Fetching professional data for user_id:', userProfile.id);
+        let { data: professionalData, error: professionalError } = await supabase
           .from('professionals')
           .select('id')
           .eq('user_id', userProfile.id)
-          .single();
+          .maybeSingle();
         
-        if (professionalError) {
-          throw new Error('Error fetching professional data');
+        console.log('Professional query result:', { professionalData, professionalError });
+        
+        // If no professional exists, create one
+        if (!professionalError && !professionalData) {
+          console.log('No professional found, creating new professional...');
+          const { data: newProfessional, error: createError } = await supabase
+            .from('professionals')
+            .insert({ user_id: userProfile.id })
+            .select('id')
+            .single();
+          
+          if (createError) {
+            console.error('Error creating professional:', createError);
+            throw new Error('Error creating professional data');
+          }
+          
+          console.log('Created new professional:', newProfessional);
+          professionalData = newProfessional;
+        } else if (professionalError) {
+          console.error('Error fetching professional:', professionalError);
+          throw new Error(`Error fetching professional data: ${professionalError.message}`);
         }
         
         if (professionalData) {
@@ -251,7 +301,7 @@ function AppointmentsContent() {
             .from('appointments')
             .select(`
               *,
-              clients:client_id (id, name, phone, user_id),
+              clients:client_id (id, user_id, users:user_id(first_name, last_name, email)),
               services:service_id (id, name, price, duration_minutes)
             `)
             .eq('professional_id', professionalData.id)
@@ -276,8 +326,8 @@ function AppointmentsContent() {
           .from('appointments')
           .select(`
             *,
-            clients:client_id (id, name, phone, user_id),
-            professionals:professional_id (id, name, specialty, user_id),
+            clients:client_id (id, user_id, users:user_id(first_name, last_name, email)),
+            professionals:professional_id (id, user_id, users:user_id(first_name, last_name, email)),
             services:service_id (id, name, price, duration_minutes)
           `)
           .order('date', { ascending: true });
@@ -344,7 +394,7 @@ function AppointmentsContent() {
           <div className="flex space-x-4">
             {role === 'client' && (
               <Link
-                href="/dashboard/appointments/book"
+                href="/appointments/book"
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 z-10 inline-block"
               >
                 Book Appointment

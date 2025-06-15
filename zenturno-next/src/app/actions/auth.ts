@@ -36,6 +36,8 @@ export async function registerUser(formData: FormData) {
           name: userDTO.name,
           role: userDTO.role,
         },
+        // NO auto sign-in, require email confirmation
+        emailRedirectTo: undefined // default behavior: require confirmation
       },
     })
     
@@ -61,8 +63,9 @@ export async function registerUser(formData: FormData) {
     revalidatePath('/')
     revalidatePath('/login')
     
-    // Redirect to login page with success message
-    redirect('/login?registered=true')
+    // No login, no session creation here
+    // Redirige siempre a login con mensaje de confirmación
+    redirect('/login?confirm=1')
   } catch (error) {
     return {
       success: false,

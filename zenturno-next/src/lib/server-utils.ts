@@ -35,12 +35,12 @@ export async function getOrCreateUserProfile(_session?: unknown) {
       let userInsertData: any = {
         email: user.email,
         role: role,
+        first_name: user.user_metadata?.first_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+        last_name: user.user_metadata?.last_name || null,
+        phone: user.user_metadata?.phone || null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }
-
-      // First attempt with name column
-      userInsertData.name = name
 
       let { data: newUser, error: createError } = await supabase
         .from('users')
@@ -48,36 +48,17 @@ export async function getOrCreateUserProfile(_session?: unknown) {
         .select()
         .single()
 
-      // If name column doesn't exist, try without it
-      if (createError?.code === 'PGRST204') {
-        console.log('Name column not found, trying alternative schema...')
-        
-        userInsertData = {
-          email: user.email,
-          role: role,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }
-
-        const result = await supabase
-          .from('users')
-          .insert(userInsertData)
-          .select()
-          .single()
-
-        newUser = result.data
-        createError = result.error
-      }
-
       if (createError) {
         console.error('Error creating user profile:', createError)
         // Fallback to session data
         return {
           userProfile: {
             id: user.id,
-            name: name,
+            first_name: user.user_metadata?.first_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+            last_name: user.user_metadata?.last_name || null,
             email: user.email,
             role: role,
+            phone: user.user_metadata?.phone || null,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           },
@@ -96,9 +77,11 @@ export async function getOrCreateUserProfile(_session?: unknown) {
       return {
         userProfile: {
           id: user.id,
-          name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+          first_name: user.user_metadata?.first_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+          last_name: user.user_metadata?.last_name || null,
           email: user.email,
           role: fallbackRole,
+          phone: user.user_metadata?.phone || null,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         },
@@ -112,9 +95,11 @@ export async function getOrCreateUserProfile(_session?: unknown) {
     return {
       userProfile: {
         id: user.id,
-        name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+        first_name: user.user_metadata?.first_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+        last_name: user.user_metadata?.last_name || null,
         email: user.email,
         role: fallbackRole,
+        phone: user.user_metadata?.phone || null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       },

@@ -4,12 +4,12 @@ import MagicLoginForm from '@/components/auth/MagicLoginForm'
 import MagicAuthLayout from '@/components/auth/MagicAuthLayout'
 
 interface PageProps {
-  searchParams: Promise<{ redirect?: string; registered?: string; error?: string }>
+  searchParams: Promise<{ redirect?: string; registered?: string; error?: string; confirm?: string }>
 }
 
 export default async function LoginPage({ searchParams }: PageProps) {
   // Await searchParams for Next.js 15 compatibility
-  const { redirect: redirectParam, registered, error } = await searchParams;
+  const { redirect: redirectParam, registered, error, confirm } = await searchParams;
   
   // Create Supabase client
   const supabase = await createClient()
@@ -43,6 +43,8 @@ export default async function LoginPage({ searchParams }: PageProps) {
     }
   } else if (justRegistered) {
     subtitle = "Account created successfully! Please check your email and confirm your account, then sign in."
+  } else if (confirm === '1') {
+    subtitle = "Registration successful! Please check your email and confirm your account before signing in."
   }
   
   return (

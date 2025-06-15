@@ -69,7 +69,9 @@ export default function ProfilePage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
               <div className="p-3 bg-gray-100 rounded-md">
-                {userProfile?.name || session.user.user_metadata?.name || 'Not set'}
+                {(userProfile?.first_name && userProfile?.last_name)
+                  ? `${userProfile.first_name} ${userProfile.last_name}`
+                  : userProfile?.first_name || userProfile?.last_name || session.user.user_metadata?.name || 'Not set'}
               </div>
             </div>
             
