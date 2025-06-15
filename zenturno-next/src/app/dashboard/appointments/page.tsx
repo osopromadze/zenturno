@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
@@ -52,7 +52,7 @@ interface AppointmentActionsProps {
   userRole: string;
 }
 
-const AppointmentActions = ({ appointmentId, status, canReschedule, userRole }: AppointmentActionsProps) => {
+const AppointmentActions = ({ appointmentId, status, canReschedule }: Omit<AppointmentActionsProps, 'userRole'>) => {
   // We'll implement the actual actions later
   return (
     <div className="flex flex-wrap gap-2">
@@ -160,7 +160,6 @@ const AppointmentCard = ({ appointment, userRole }: AppointmentCardProps) => {
             appointmentId={appointment.id} 
             status={appointment.status} 
             canReschedule={canReschedule}
-            userRole={userRole}
           />
         </div>
       </div>
@@ -178,18 +177,7 @@ function AppointmentsContent() {
   const [fetchingAppointments, setFetchingAppointments] = useState(false);
   const [appointmentError, setAppointmentError] = useState<string | null>(null);
   
-  useEffect(() => {
-    if (!isLoading && !session) {
-      router.push('/login?redirect=/dashboard/appointments');
-      return;
-    }
-    
-    if (session && userProfile) {
-      fetchAppointments();
-    }
-  }, [isLoading, session, userProfile, statusFilter, router]);
-  
-  const fetchAppointments = async () => {
+  const fetchAppointments = useCallback(async () => {
     if (!session || !userProfile) return;
     
     setFetchingAppointments(true);
@@ -201,11 +189,19 @@ function AppointmentsContent() {
       if (role === 'client') {
         // Get client ID - use maybeSingle to handle no results gracefully
         console.log('Fetching client data for user_id:', userProfile.id);
-        let { data: clientData, error: clientError } = await supabase
+        const { error: clientError } = await supabase
           .from('clients')
           .select('id')
           .eq('user_id', userProfile.id)
           .maybeSingle();
+        
+        let clientData = await supabase
+          .from('clients')
+          .select('id')
+          .eq('user_id', userProfile.id)
+          .maybeSingle()
+          .then(result => result.data);
+
         
         console.log('Client query result:', { clientData, clientError });
         
@@ -266,11 +262,19 @@ function AppointmentsContent() {
       } else if (role === 'professional') {
         // Get professional ID
         console.log('Fetching professional data for user_id:', userProfile.id);
-        let { data: professionalData, error: professionalError } = await supabase
+        const { error: professionalError } = await supabase
           .from('professionals')
           .select('id')
           .eq('user_id', userProfile.id)
           .maybeSingle();
+          
+        let professionalData = await supabase
+          .from('professionals')
+          .select('id')
+          .eq('user_id', userProfile.id)
+          .maybeSingle()
+          .then(result => result.data);
+
         
         console.log('Professional query result:', { professionalData, professionalError });
         
@@ -345,15 +349,24 @@ function AppointmentsContent() {
           setAppointments(data || []);
         }
       }
-    } catch (err: unknown) {
-      console.error('Error fetching appointments:', err);
-      setAppointmentError(
-        err instanceof Error ? err.message : 'Failed to fetch appointments'
-      );
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+      setAppointmentError('Failed to load appointments');
     } finally {
       setFetchingAppointments(false);
     }
-  };
+  }, [session, userProfile, statusFilter, role]);
+  
+  useEffect(() => {
+    if (!isLoading && !session) {
+      router.push('/login?redirect=/dashboard/appointments');
+      return;
+    }
+    
+    if (session && userProfile) {
+      fetchAppointments();
+    }
+  }, [isLoading, session, userProfile, router, fetchAppointments]);
   
   // Show loading state
   if (isLoading || fetchingAppointments) {

@@ -17,7 +17,7 @@ export default async function BookAppointmentPage() {
   }
 
   // Get or create user profile with robust error handling
-  const { userProfile, role } = await getOrCreateUserProfile(session);
+  const { userProfile, role } = await getOrCreateUserProfile();
   
   if (!userProfile) {
     return (
