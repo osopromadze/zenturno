@@ -75,7 +75,9 @@ export default async function EditProfilePage() {
                   type="text"
                   id="name"
                   name="name"
-                  defaultValue={profile?.name || ''}
+                  defaultValue={(profile?.first_name && profile?.last_name)
+                    ? `${profile.first_name} ${profile.last_name}`
+                    : profile?.first_name || profile?.last_name || ''}
                   className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                   required
                 />

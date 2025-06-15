@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation";
 
 type UserProfile = {
   id: string;
-  name: string;
+  first_name: string | null;
+  last_name: string | null;
   email: string;
   role: string;
+  phone: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -68,8 +70,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           
           const userInsertData = {
             email: session.user.email,
-            name: name,
+            first_name: session.user.user_metadata?.first_name || name,
+            last_name: session.user.user_metadata?.last_name || null,
             role: userRole,
+            phone: session.user.user_metadata?.phone || null,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           };
@@ -85,9 +89,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             // Fallback to session data
             const fallbackProfile = {
               id: session.user.id,
-              name: name,
+              first_name: session.user.user_metadata?.first_name || session.user.user_metadata?.name || null,
+              last_name: session.user.user_metadata?.last_name || null,
               email: session.user.email || '',
               role: userRole,
+              phone: session.user.user_metadata?.phone || null,
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString()
             };
@@ -103,9 +109,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           const fallbackRole = session.user.user_metadata?.role || 'client';
           const fallbackProfile = {
             id: session.user.id,
-            name: session.user.user_metadata?.name || (session.user.email ? session.user.email.split('@')[0] : 'User'),
+            first_name: session.user.user_metadata?.first_name || session.user.user_metadata?.name || null,
+            last_name: session.user.user_metadata?.last_name || null,
             email: session.user.email || '',
             role: fallbackRole,
+            phone: session.user.user_metadata?.phone || null,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           };

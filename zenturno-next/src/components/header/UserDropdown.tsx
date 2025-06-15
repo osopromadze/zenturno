@@ -27,11 +27,13 @@ export default function UserDropdown() {
         className="flex items-center text-gray-700 dropdown-toggle"
       >
         <div className="flex items-center justify-center w-11 h-11 overflow-hidden rounded-full bg-primary text-white">
-          {userProfile?.name?.[0]?.toUpperCase() || session?.user?.email?.[0]?.toUpperCase() || 'U'}
+          {userProfile?.first_name?.[0]?.toUpperCase() || userProfile?.last_name?.[0]?.toUpperCase() || session?.user?.email?.[0]?.toUpperCase() || 'U'}
         </div>
 
         <span className="hidden mr-1 font-medium text-sm ml-3 lg:block">
-          {userProfile?.name || session?.user?.email?.split('@')[0] || 'User'}
+          {(userProfile?.first_name && userProfile?.last_name)
+            ? `${userProfile.first_name} ${userProfile.last_name}`
+            : userProfile?.first_name || userProfile?.last_name || session?.user?.email?.split('@')[0] || 'User'}
         </span>
 
         <svg
@@ -61,7 +63,9 @@ export default function UserDropdown() {
       >
         <div>
           <span className="block font-medium text-gray-800 text-sm">
-            {userProfile?.name || session?.user?.email?.split('@')[0] || 'User'}
+            {(userProfile?.first_name && userProfile?.last_name)
+              ? `${userProfile.first_name} ${userProfile.last_name}`
+              : userProfile?.first_name || userProfile?.last_name || session?.user?.email?.split('@')[0] || 'User'}
           </span>
           <span className="mt-0.5 block text-xs text-gray-500">
             {userProfile?.email || session?.user?.email || 'user@example.com'}

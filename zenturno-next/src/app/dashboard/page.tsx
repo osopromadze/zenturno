@@ -67,7 +67,7 @@ function DashboardContent() {
         )}
         
         <div className="bg-white shadow rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Welcome, {userProfile?.name || session.user.user_metadata?.name || 'User'}</h2>
+          <h2 className="text-xl font-semibold mb-4">Welcome, {userProfile?.first_name || session.user.user_metadata?.name || 'User'}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <p className="text-gray-600">Email:</p>

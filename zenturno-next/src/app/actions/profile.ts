@@ -80,8 +80,7 @@ export async function updateProfile(formData: FormData) {
         const { error: updateClientError } = await supabase
           .from('clients')
           .update({
-            name: name.trim(),
-            phone: phone.trim(),
+            notes: phone.trim(),
             updated_at: new Date().toISOString()
           })
           .eq('id', clientData.id);
@@ -95,8 +94,6 @@ export async function updateProfile(formData: FormData) {
         const { error: insertClientError } = await supabase
           .from('clients')
           .insert({
-            name: name.trim(),
-            phone: phone.trim(),
             user_id: user.getId()
           });
         

@@ -220,7 +220,6 @@ export default function AppointmentsClientPage() {
             const { data: newClient, error: createClientError } = await supabase
               .from('clients')
               .insert({
-                name: userProfile.name,
                 user_id: userProfile.id
               })
               .select('id')
@@ -244,7 +243,6 @@ export default function AppointmentsClientPage() {
             const { data: newProfessional, error: createProfessionalError } = await supabase
               .from('professionals')
               .insert({
-                name: userProfile.name,
                 user_id: userProfile.id
               })
               .select('id')

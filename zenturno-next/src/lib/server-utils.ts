@@ -5,7 +5,7 @@ import { UserRole } from '@/domain/user/UserRole'
  * Get or create user profile with robust error handling
  * This function handles cases where user might not exist in custom tables
  */
-export async function getOrCreateUserProfile(_session?: unknown) {
+export async function getOrCreateUserProfile() {
   const supabase = await createClient()
   
   // Use getUser() for better security instead of relying on session data
@@ -28,46 +28,32 @@ export async function getOrCreateUserProfile(_session?: unknown) {
     console.log('Creating missing user profile for:', user.email)
     
     try {
-      const name = user.user_metadata?.name || user.email?.split('@')[0] || 'User'
       const role = user.user_metadata?.role || UserRole.CLIENT
       
       // Try to create user record with flexible schema
-      let userInsertData: any = {
-        email: user.email,
+      const userInsertData: {
+        email: string;
+        role: string;
+        first_name: string;
+        last_name: string | null;
+        phone: string | null;
+        created_at: string;
+        updated_at: string;
+      } = {
+        email: user.email || '',
         role: role,
+        first_name: user.user_metadata?.first_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+        last_name: user.user_metadata?.last_name || null,
+        phone: user.user_metadata?.phone || null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }
 
-      // First attempt with name column
-      userInsertData.name = name
-
-      let { data: newUser, error: createError } = await supabase
+      const { data: newUser, error: createError } = await supabase
         .from('users')
         .insert(userInsertData)
         .select()
         .single()
-
-      // If name column doesn't exist, try without it
-      if (createError?.code === 'PGRST204') {
-        console.log('Name column not found, trying alternative schema...')
-        
-        userInsertData = {
-          email: user.email,
-          role: role,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }
-
-        const result = await supabase
-          .from('users')
-          .insert(userInsertData)
-          .select()
-          .single()
-
-        newUser = result.data
-        createError = result.error
-      }
 
       if (createError) {
         console.error('Error creating user profile:', createError)
@@ -75,9 +61,11 @@ export async function getOrCreateUserProfile(_session?: unknown) {
         return {
           userProfile: {
             id: user.id,
-            name: name,
-            email: user.email,
+            first_name: user.user_metadata?.first_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+            last_name: user.user_metadata?.last_name || null,
+            email: user.email || '',
             role: role,
+            phone: user.user_metadata?.phone || null,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           },
@@ -96,9 +84,11 @@ export async function getOrCreateUserProfile(_session?: unknown) {
       return {
         userProfile: {
           id: user.id,
-          name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
-          email: user.email,
+          first_name: user.user_metadata?.first_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+          last_name: user.user_metadata?.last_name || null,
+          email: user.email || '',
           role: fallbackRole,
+          phone: user.user_metadata?.phone || null,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         },
@@ -112,9 +102,11 @@ export async function getOrCreateUserProfile(_session?: unknown) {
     return {
       userProfile: {
         id: user.id,
-        name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
-        email: user.email,
+        first_name: user.user_metadata?.first_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+        last_name: user.user_metadata?.last_name || null,
+        email: user.email || '',
         role: fallbackRole,
+        phone: user.user_metadata?.phone || null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       },
