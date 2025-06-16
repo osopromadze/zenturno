@@ -6,8 +6,9 @@ const outfit = Outfit({
   subsets: ["latin"],
 });
 
-// Context providers for sidebar
+// Context providers
 import { SidebarProvider } from "@/context/SidebarContext";
+import { AuthErrorBoundaryWrapper } from "@/components/AuthErrorBoundaryWrapper";
 
 export const metadata: Metadata = {
   title: "ZenTurno - Appointment Booking System",
@@ -26,7 +27,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${outfit.className}`}>
         <SidebarProvider>
-          {children}
+          <AuthErrorBoundaryWrapper>
+            {children}
+          </AuthErrorBoundaryWrapper>
         </SidebarProvider>
       </body>
     </html>

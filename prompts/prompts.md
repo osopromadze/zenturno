@@ -380,3 +380,9 @@ Remove dark mode from the dashboard, as it's not needed for now.
 -----
 On the top-right menu button of the dashboard page, the username is hardcoded as "User". Update it to display the actual logged-in user's name. Additionally, the "Profile" option in the menu is non-functional—please ensure it navigates to the user's profile page.
 -----
+On the sign-up page, when a user selects the 'Register as Professional' option, the form currently displays a free-text input field for 'Speciality'. Replace this free field with a dropdown (or searchable select component) populated with predefined speciality options fetched from the database. Ensure that the selected value matches the existing database entries to maintain data integrity.
+-----
+The sign-out buttons are currently not functioning on both the profile screen and the navigation menu. Investigate and fix the issue to ensure that clicking either sign-out button properly logs the user out and redirects them as intended (e.g., to the login or home screen).
+-----
+On the Appointments page, clicking the 'Book Appointment' button incorrectly redirects the user to the dashboard. Investigate and fix the navigation logic so that after clicking 'Book Appointment', the user is taken to the appropriate booking confirmation flow or the intended next step, not the dashboard.
+-----

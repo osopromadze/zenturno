@@ -56,11 +56,21 @@ export default function MagicLoginForm({ redirectTo = '/dashboard' }: LoginFormP
         throw error
       }
 
-      // Refresh the page to update the session
-      router.refresh()
+      // Wait for the session to be properly established
+      console.log('Login successful, ensuring session is synchronized...')
       
-      // Redirect to the specified page or dashboard
-      router.push(redirectTo)
+      // Get the session to ensure it's properly set
+      const { data } = await supabase.auth.getSession()
+      
+      if (!data.session) {
+        console.error('Session not established after login')
+        throw new Error('Failed to establish session. Please try again.')
+      }
+      
+      console.log('Session synchronized successfully, redirecting...')
+      
+      // Use replace instead of push to avoid back button issues
+      router.replace(redirectTo)
     } catch (error: any) {
       console.error('Login error:', error)
       

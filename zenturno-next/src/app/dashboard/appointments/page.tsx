@@ -167,11 +167,51 @@ const AppointmentCard = ({ appointment, userRole }: AppointmentCardProps) => {
   );
 };
 
+// Success message component
+function SuccessMessage({ message }: { message: string }) {
+  const [visible, setVisible] = useState(true);
+  
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setVisible(false);
+    }, 5000);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
+  if (!visible) return null;
+  
+  const messages: Record<string, string> = {
+    'appointment-created': 'Appointment created successfully!',
+    'appointment-updated': 'Appointment updated successfully!',
+    'appointment-cancelled': 'Appointment cancelled successfully!',
+    'appointment-confirmed': 'Appointment confirmed successfully!',
+    'appointment-completed': 'Appointment marked as completed!'
+  };
+  
+  const displayMessage = messages[message] || 'Operation completed successfully!';
+  
+  return (
+    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6 flex justify-between items-center">
+      <div>
+        <span className="font-bold">Success!</span> {displayMessage}
+      </div>
+      <button 
+        onClick={() => setVisible(false)}
+        className="text-green-700 hover:text-green-900"
+      >
+        <span className="text-2xl">&times;</span>
+      </button>
+    </div>
+  );
+}
+
 function AppointmentsContent() {
   const { session, userProfile, role, isLoading, error } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const statusFilter = searchParams.get('status') || 'all';
+  const messageParam = searchParams.get('message');
   
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [fetchingAppointments, setFetchingAppointments] = useState(false);
@@ -416,6 +456,9 @@ function AppointmentsContent() {
           </div>
         </div>
         
+        {/* Display success message if present */}
+        {messageParam && <SuccessMessage message={messageParam} />}
+        
         <div className="bg-white shadow rounded-lg p-6 mb-8">
           <div className="flex flex-wrap gap-4 relative z-10">
             <Link
@@ -476,7 +519,7 @@ function AppointmentsContent() {
             <p className="text-gray-600">
               No appointments found.
               {role === 'client' && (
-                <Link href="/dashboard/appointments/book" className="text-blue-600 ml-1 hover:underline font-medium">
+                <Link href="/appointments/book" className="text-blue-600 ml-1 hover:underline font-medium">
                   Book an appointment
                 </Link>
               )}

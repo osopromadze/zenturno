@@ -152,9 +152,9 @@ export default function UserDropdown() {
         <button
           onClick={async () => {
             try {
-              await signOut();
               closeDropdown();
-              router.push('/login');
+              await signOut();
+              // No need for router.push here as signOut already handles redirection
             } catch (error) {
               console.error('Error signing out:', error);
             }

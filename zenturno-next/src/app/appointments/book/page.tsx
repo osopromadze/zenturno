@@ -57,7 +57,7 @@ export default async function BookAppointmentPage() {
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Book an Appointment</h1>
           <a 
-            href="/appointments" 
+            href="/dashboard/appointments" 
             className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
           >
             Back to Appointments

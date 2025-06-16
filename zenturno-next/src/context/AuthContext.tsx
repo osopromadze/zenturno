@@ -1,8 +1,10 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { useRouter } from "next/navigation";
+import { synchronizeSession, clearAuthData } from '@/lib/auth-utils';
+import { Session } from '@supabase/supabase-js';
 
 type UserProfile = {
   id: string;
@@ -141,29 +143,96 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signOut = async () => {
     try {
-      const supabase = createClient();
-      await supabase.auth.signOut();
+      console.log('Starting sign-out process');
+      
+      // 1. First clear all client-side auth data using our utility
+      console.log('Clearing client-side auth data');
+      clearAuthData();
+      
+      console.log('Resetting React state');
+      // Reset React state
       setSession(null);
       setUserProfile(null);
-      router.push('/login');
+      setRole('client');
+      
+      // 2. Then try server-side sign-out, but handle errors gracefully
+      try {
+        console.log('Attempting server-side sign-out');
+        const supabase = createClient();
+        
+        // Check if we have a valid session before trying to sign out
+        const { data: sessionData } = await supabase.auth.getSession();
+        
+        if (sessionData?.session) {
+          console.log('Valid session found, signing out');
+          await supabase.auth.signOut();
+          console.log('Server-side sign-out successful');
+        } else {
+          console.info('No valid session found, skipping server-side sign-out');
+        }
+      } catch (error: any) {
+        // If it's the expected "session not found" error, just log it as info
+        if (error?.message?.includes('session not found') || 
+            error?.code === 'session_not_found') {
+          console.info('Session already expired or not found on server:', error);
+        } else {
+          // For other errors, log as warning but continue
+          console.warn('Non-critical error during sign-out:', error);
+        }
+      }
+      
+      console.log('Sign-out process complete, redirecting to login');
+      // 3. Always redirect to login page
+      router.replace('/login');
     } catch (error) {
-      console.error('Error signing out:', error);
+      // Even if something goes wrong, try to redirect to login
+      console.error('Error during sign-out cleanup:', error);
+      router.replace('/login');
     }
   };
 
+  // Initial auth setup and session check
   useEffect(() => {
-    fetchUserProfile();
-    
-    // Set up auth state listener
     const supabase = createClient();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+    
+    // Initial session check
+    const checkSession = async () => {
+      try {
+        // Use synchronizeSession to ensure consistent state
+        const session = await synchronizeSession();
         setSession(session);
         if (session) {
           fetchUserProfile();
         } else {
           setUserProfile(null);
           setRole('client');
+        }
+      } catch (error) {
+        console.warn("Session check failed:", error);
+        setSession(null);
+        setUserProfile(null);
+        setRole('client');
+      }
+    };
+    
+    checkSession();
+    
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log("Auth state change:", event);
+        setSession(session);
+        
+        if (session) {
+          fetchUserProfile();
+        } else {
+          setUserProfile(null);
+          setRole('client');
+          
+          // If explicitly signed out, clear everything
+          if (event === 'SIGNED_OUT') {
+            // Additional cleanup if needed
+          }
         }
       }
     );
@@ -172,6 +241,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       subscription.unsubscribe();
     };
   }, []);
+  
+  // Proactive session refresh
+  useEffect(() => {
+    if (!session) return;
+    
+    // Calculate when to refresh (e.g., 5 minutes before expiry)
+    const expiresAt = session.expires_at ? session.expires_at * 1000 : 0; // convert to milliseconds
+    if (!expiresAt) return;
+    
+    const refreshTime = expiresAt - (5 * 60 * 1000); // 5 minutes before expiry
+    const now = Date.now();
+    
+    let refreshTimeout: NodeJS.Timeout | undefined;
+    if (refreshTime > now) {
+      refreshTimeout = setTimeout(async () => {
+        try {
+          const supabase = createClient();
+          const { error } = await supabase.auth.refreshSession();
+          if (error) {
+            console.warn("Session refresh failed:", error);
+          }
+        } catch (error) {
+          console.warn("Session refresh exception:", error);
+        }
+      }, refreshTime - now);
+    }
+    
+    return () => {
+      if (refreshTimeout) clearTimeout(refreshTimeout);
+    };
+  }, [session]);
 
   return (
     <AuthContext.Provider

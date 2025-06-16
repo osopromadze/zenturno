@@ -125,8 +125,8 @@ export async function createAppointment(formData: FormData) {
     return { error: 'An unexpected error occurred' };
   }
   
-  // Redirect to dashboard appointments page (outside try/catch to avoid catching NEXT_REDIRECT)
-  redirect('/dashboard/appointments?status=pending');
+  // Redirect directly to dashboard appointments page with success message (outside try/catch to avoid catching NEXT_REDIRECT)
+  redirect('/dashboard/appointments?message=appointment-created');
 }
 
 /**

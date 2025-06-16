@@ -11,15 +11,55 @@ function DashboardContent() {
   const searchParams = useSearchParams();
   const message = searchParams.get('message');
   const [isClient, setIsClient] = useState(false);
+  const [sessionCheckAttempts, setSessionCheckAttempts] = useState(0);
+  const MAX_SESSION_CHECK_ATTEMPTS = 3;
 
   useEffect(() => {
     setIsClient(true);
     
-    // Redirect to login if not authenticated
-    if (!isLoading && !session) {
-      router.push('/login');
+    // Only check session after a small delay to allow auth context to initialize
+    const checkSession = () => {
+      console.log('Checking session state:', { isLoading, hasSession: !!session, attempts: sessionCheckAttempts });
+      
+      if (isLoading) {
+        // Still loading, wait
+        return;
+      }
+      
+      if (session) {
+        // Session found, we're good
+        console.log('Session found, staying on dashboard');
+        return;
+      }
+      
+      // No session found after loading completed
+      if (sessionCheckAttempts < MAX_SESSION_CHECK_ATTEMPTS) {
+        // Try again after a delay
+        console.log(`No session found, attempt ${sessionCheckAttempts + 1}/${MAX_SESSION_CHECK_ATTEMPTS}`);
+        setSessionCheckAttempts(prev => prev + 1);
+        return;
+      }
+      
+      // Max attempts reached, redirect to login
+      console.log('Max session check attempts reached, redirecting to login');
+      const currentPath = window.location.pathname;
+      router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
+    };
+    
+    // Initial check
+    if (isClient) {
+      checkSession();
     }
-  }, [isLoading, session, router]);
+    
+    // Set up interval for subsequent checks
+    const intervalId = setInterval(() => {
+      if (sessionCheckAttempts < MAX_SESSION_CHECK_ATTEMPTS && !session && !isLoading) {
+        checkSession();
+      }
+    }, 1000); // Check every second
+    
+    return () => clearInterval(intervalId);
+  }, [isLoading, session, router, isClient, sessionCheckAttempts]);
 
   // Show loading state while authentication is being checked
   if (isLoading || !isClient) {
@@ -94,7 +134,7 @@ function DashboardContent() {
               <DashboardCard
                 title="Book Appointment"
                 description="Schedule a new appointment with a professional"
-                link="/dashboard/appointments/book"
+                link="/appointments/book"
               />
               <DashboardCard
                 title="My Appointments"

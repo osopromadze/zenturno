@@ -84,7 +84,13 @@ async function createUserRecord(supabase: any, user: any) {
       
       const userMetadata = user.user_metadata || {}
       const name = userMetadata.name || user.email?.split('@')[0] || 'User'
-      const role = userMetadata.role || 'client'
+      
+      // Ensure role is never empty and is a valid value
+      let role = userMetadata.role || ''
+      // Validate role - must be either 'client' or 'professional', default to 'client' if invalid
+      role = (role === 'client' || role === 'professional') ? role : 'client'
+      console.log(`Using role: ${role} for user: ${user.email}`)
+      
       const phone = userMetadata.phone
       const specialty = userMetadata.specialty
 
@@ -165,13 +171,23 @@ async function createUserRecord(supabase: any, user: any) {
 }
 
 async function createRoleSpecificRecord(supabase: any, newUser: any, role: string, name: string, phone?: string, specialty?: string) {
-  // Create role-specific record only if we have the necessary data
-  if (role === 'client' && phone) {
-    await createClientRecord(supabase, newUser, name, phone)
-  } else if (role === 'professional' && specialty) {
-    await createProfessionalRecord(supabase, newUser, name, specialty)
-  } else {
-    console.log(`Skipping role-specific record creation for role: ${role} (missing required data)`)
+  try {
+    // Validate and normalize role - default to client if empty or invalid
+    const normalizedRole = (!role || (role !== 'client' && role !== 'professional')) 
+      ? 'client' 
+      : role;
+    
+    console.log(`Creating ${normalizedRole} record for user: ${newUser.id}, email: ${newUser.email}`);
+    
+    if (normalizedRole === 'client' && newUser.id) {
+      await createClientRecord(supabase, newUser, name, phone || '');
+    } else if (normalizedRole === 'professional' && newUser.id) {
+      await createProfessionalRecord(supabase, newUser, name, specialty || '');
+    } else {
+      console.error(`Failed to create role-specific record: Invalid user ID or role. User ID: ${newUser?.id}, Role: ${normalizedRole}`);
+    }
+  } catch (error) {
+    console.error('Error creating role-specific record:', error);
   }
 }
 
