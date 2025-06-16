@@ -310,11 +310,6 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
                       <p className="mt-2">
                         <span className="text-gray-600">Professional:</span>{' '}
                         <span className="font-medium">{appointment.getProfessional()?.getName()}</span>
-                        {appointment.getProfessional()?.getSpecialty() && (
-                          <span className="text-gray-600 ml-1">
-                            ({appointment.getProfessional()?.getSpecialty()})
-                          </span>
-                        )}
                       </p>
                     )}
                     
